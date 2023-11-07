@@ -7,7 +7,43 @@
 
 This repo uses the [NLP Research Template](https://github.com/konstantinjdobler/nlp-research-template) by Konstantin Dobler.
 
-## General template info
+## Setup
+
+It's recommended to use [`mamba`](https://github.com/mamba-org/mamba) to manage dependencies. `mamba` is a drop-in replacement for `conda` re-written in C++ to speed things up significantly (you can stick with `conda` though).
+
+<details><summary>Installing <code>mamba</code></summary>
+
+<p>
+
+On Unix-like platforms, run the snippet below. Otherwise, visit the [mambaforge repo](https://github.com/conda-forge/miniforge#mambaforge). Note this does not use the Anaconda installer, which reduces bloat.
+
+```bash
+curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+bash Miniforge3-$(uname)-$(uname -m).sh
+```
+
+</details>
+
+### Environment
+
+Lockfiles are an easy way to **exactly** reproduce an environment.
+
+After having installed `mamba`, you can create a `mamba` environment from the `environment.yml` with all necessary dependencies installed like this:
+
+```bash
+mamba env create -f environment.yml
+```
+
+You can then activate your environment with
+
+```bash
+mamba activate aip-porsche
+```
+
+To generate new lockfiles after updating the `environment.yml` file, simply run `conda-lock -f environment.yml`.
+
+<details> <summary>
+<i>NLP Research template README</i> </summary>
 
 NLP research template for training language models using PyTorch + Lightning + Weights & Biases + HuggingFace. It's built to be customized but provides comprehensive, sensible default functionality.
 
@@ -235,3 +271,5 @@ Sometimes it's just quicker or unavoidable to create an environment via `conda-l
 ### Code style
 
 We use the `ruff` linter and `black` formatter. You should install their VS Code extensions and enable "Format on Save" inside VS Code.
+
+</details>
