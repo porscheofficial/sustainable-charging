@@ -75,7 +75,7 @@ git push origin [your_branch_name]
 - Periodically, we will merge dev into main to update the stable version.
 - This will be a collective decision after thorough testing and review.
 
-### Best Practices
+### Requirements for merging
 
 - Test your code thoroughly before submitting a PR.
 - Document your code and update the README if necessary.
