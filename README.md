@@ -21,7 +21,7 @@ We use three types of branches:
 
 - `main`: Stable version of the project. All changes eventually merge here.
 - `dev`: Development branch for integrating various features before moving to main.
-- Feature/Issue-Specific Branches: For working on new features or fixing issues.
+- `feature/<issue_number>-branch-description`: For working on new features or fixing issues.
 
 #### 1. Creating a Branch
 
