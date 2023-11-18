@@ -26,7 +26,7 @@ We use three types of branches:
 #### 1. Creating a Branch
 
 - Always create a new branch for your work, branching off from dev.
-- Name your branch meaningfully, like `feature/add-nlp-model` or `fix/data-loading-issue`.
+- Name your branch meaningfully, like `feature/111-add-nlp-model` or `fix/222-data-loading-issue`.
 
 ```bash
 git checkout dev
