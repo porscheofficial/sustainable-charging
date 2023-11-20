@@ -1,6 +1,5 @@
-# AI in Practice: Porsche Digital Challenge
+# Energy Mix Prediction Model
 
-[![Docker Hub](https://img.shields.io/docker/v/konstantinjdobler/nlp-research-template/latest?color=blue&label=docker&logo=docker)](https://hub.docker.com/r/konstantinjdobler/nlp-research-template/tags)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ![Linter](https://img.shields.io/badge/linter-ruff-blue)
 ![License: MIT](https://img.shields.io/github/license/konstantinjdobler/nlp-research-template?color=green)
@@ -9,6 +8,7 @@ This repo uses the [NLP Research Template](https://github.com/konstantinjdobler/
 
 ## Setup
 
+Follow these instructions to set up your Python environment to contribute to or run the code in this repository.
 It's recommended to use [`mamba`](https://github.com/mamba-org/mamba) to manage dependencies. `mamba` is a drop-in replacement for `conda` re-written in C++ to speed things up significantly (you can stick with `conda` though).
 
 <details><summary>Installing <code>mamba</code></summary>
@@ -26,8 +26,6 @@ bash Miniforge3-$(uname)-$(uname -m).sh
 
 ### Environment
 
-Lockfiles are an easy way to **exactly** reproduce an environment.
-
 After having installed `mamba`, you can create a `mamba` environment from the `environment.yml` with all necessary dependencies installed like this:
 
 ```bash
@@ -40,7 +38,9 @@ You can then activate your environment with
 mamba activate aip-porsche
 ```
 
-To generate new lockfiles after updating the `environment.yml` file, simply run `conda-lock -f environment.yml`.
+### Updating the Environment
+
+Working together with many people in a shared environment requires caution. If you want to add a dependency to the `environment.yml`, install the dependency locally and test that there are no conflicts with the existing environment. Then open a pull request with an updated `environment.yml` to ensure that all collaborators can reproduce the environment.
 
 <details> <summary>
 <i>NLP Research template README</i> </summary>
