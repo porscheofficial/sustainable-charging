@@ -3,6 +3,7 @@
 
 # IDE
 .vscode
+.env
 
 # python venv
 **/.venv
