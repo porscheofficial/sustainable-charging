@@ -1,14 +1,37 @@
 from typing import Callable, List
 
+import matplotlib.pyplot as plt
 from darts import TimeSeries
 from darts.dataprocessing.transformers import Scaler
 from darts.models.forecasting.forecasting_model import ForecastingModel
+from numpy import average
 from pandas import Timestamp, Timedelta
-import matplotlib.pyplot as plt
 
 
-def get_covariate_args(model, covariates):
+def get_covariate_args(model, covariates: TimeSeries):
+    """
+    Prepare covariate arguments for forecasting using a ForecastingModel.
 
+    Parameters
+    ----------
+    model
+        A ForecastingModel instance.
+    covariates
+        A scaled TimeSeries object containing covariate data.
+
+    Returns
+    -------
+    Tuple[Dict[str, TimeSeries], Dict[str, TimeSeries]]
+        A tuple of dictionaries, where the first dictionary (covariate_args) contains
+        keys related to both past and future covariates, and the second dictionary
+        (covariate_args_inference) contains keys for inference purposes.
+
+    Note
+    ----
+    The entire covariates TimeSeries object is added to each key in the dictionaries
+    to ensure that all relevant covariate information is available during forecasting.
+    This approach simplifies the handling of covariates within the Darts framework.
+    """
     covariate_args = {}
     covariate_args_inference = {}
     if model.supports_past_covariates:
@@ -31,9 +54,9 @@ def cross_validation_without_refit(
         data_scaler: Scaler,
         covariates: dict[str, TimeSeries],
         n_split: int = 5,
-        plotting: bool = False,
-        forecast_horizon: int = 7 * 24
-) -> None:
+        forecast_horizon: int = 7 * 24,
+        plotting: bool = False
+) -> dict | None:
     """Perform cross-validation without refitting the model.
 
     Parameters
@@ -59,8 +82,8 @@ def cross_validation_without_refit(
 
     Returns
     -------
-    None
-        The function prints evaluation metrics for each iteration and, if plotting is enabled, displays plots."""
+    metrics_dict | None
+        A dictionary with average values of every metric in `metrics` or `None` in an error case."""
     for n in range(n_split, -1, -1):
         next_start_timestamp = start + Timedelta(forecast_horizon * n, 'h')
         try:
@@ -73,19 +96,30 @@ def cross_validation_without_refit(
             break
 
     _, covariate_args_inference = get_covariate_args(model, covariates)
+    metrics_dict = {metric.__name__: [] for metric in metrics}
 
+    global forecast
     for n in range(n_split):
         next_start_timestamp = start + Timedelta(forecast_horizon * n, 'h')
-        forecast = model.predict(forecast_horizon, series=series[:next_start_timestamp], **covariate_args_inference,
-                                 verbose=False)
+        try:
+            forecast = model.predict(forecast_horizon, series=series[:next_start_timestamp], **covariate_args_inference,
+                                     verbose=False)
+        except ValueError as e:
+            print(f'Can\'t predict the very first forecast_horizon of {forecast_horizon} timestamps '
+                  f'as the passed start time ({start}) needs to be '
+                  f'lagged by the `input_chunk_length` of the model into the future.')
+            print(e)
+            return None
+        except Exception as e:
+            print(e)
+            return None
 
         forecast_rescaled = data_scaler.inverse_transform(forecast)
         original_rescaled = data_scaler.inverse_transform(
             series[next_start_timestamp + Timedelta(1, 'h'):forecast.end_time()])
 
         for metric in metrics:
-            calculated_metric = metric(original_rescaled, forecast_rescaled)
-            print(f'{metric.__name__}: {calculated_metric}')
+            metrics_dict[metric.__name__].append(metric(original_rescaled, forecast_rescaled))
 
         if plotting:
             for col in forecast_rescaled.columns:
@@ -94,3 +128,8 @@ def cross_validation_without_refit(
                 original_rescaled[col].plot(label="original")
                 plt.title(col)
                 plt.show()
+
+    for metric, results in metrics_dict.items():
+        metrics_dict[metric] = average(results)
+
+    return metrics_dict
