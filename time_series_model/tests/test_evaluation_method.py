@@ -7,8 +7,6 @@ from darts.models.forecasting.rnn_model import RNNModel
 from darts.timeseries import TimeSeries
 from darts.utils.timeseries_generation import datetime_attribute_timeseries
 from pandas import Timedelta
-from pyarrow import Table
-from pyarrow.parquet import ParquetFile
 from pandas import read_parquet
 
 from time_series_model.src.evaluation_method import cross_validation_without_refit
