@@ -1,3 +1,5 @@
+from logging import error
+
 import matplotlib.pyplot as plt
 from darts import TimeSeries
 from darts.dataprocessing.transformers import Scaler
@@ -85,7 +87,7 @@ def cross_validation_without_refit(
     try:
         possible_n_split = len(series[start:]) // forecast_horizon
     except ZeroDivisionError:
-        print(f'`forecast_horizon` must be bigger than 0.')
+        error(f'`forecast_horizon` must be bigger than 0.')
         return None
     else:
         if max_n_split < possible_n_split:
@@ -100,13 +102,13 @@ def cross_validation_without_refit(
             forecast = model.predict(forecast_horizon, series=series[:next_start_timestamp], **covariate_args_inference,
                                      verbose=False)
         except ValueError as e:
-            print(f'Can\'t predict the very first forecast_horizon of {forecast_horizon} timestamps '
+            error(f'Can\'t predict the very first forecast_horizon of {forecast_horizon} timestamps '
                   f'as the passed start time ({start}) needs to be '
                   f'lagged by the `input_chunk_length` of the model into the future.')
-            print(e)
+            error(e)
             return None
         except Exception as e:
-            print(e)
+            error(e)
             return None
 
         forecast_rescaled = data_scaler.inverse_transform(forecast)
