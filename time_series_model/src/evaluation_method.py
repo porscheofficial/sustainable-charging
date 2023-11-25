@@ -1,5 +1,4 @@
-from typing import Callable, List
-
+import logging
 import matplotlib.pyplot as plt
 from darts import TimeSeries
 from darts.dataprocessing.transformers import Scaler
@@ -8,7 +7,7 @@ from numpy import average
 from pandas import Timestamp, Timedelta
 
 
-def get_covariate_args(model, covariates: TimeSeries):
+def get_covariate_args(model: ForecastingModel, covariates: TimeSeries):
     """
     Prepare covariate arguments for forecasting using a ForecastingModel.
 
@@ -21,7 +20,7 @@ def get_covariate_args(model, covariates: TimeSeries):
 
     Returns
     -------
-    Tuple[Dict[str, TimeSeries], Dict[str, TimeSeries]]
+    tuple[dict[str, TimeSeries], dict[str, TimeSeries]]
         A tuple of dictionaries, where the first dictionary (covariate_args) contains
         keys related to both past and future covariates, and the second dictionary
         (covariate_args_inference) contains keys for inference purposes.
@@ -50,10 +49,10 @@ def cross_validation_without_refit(
         model: ForecastingModel,
         series: TimeSeries,
         start: Timestamp,
-        metrics: List[Callable],
+        metrics: list[callable],
         data_scaler: Scaler,
         covariates: dict[str, TimeSeries],
-        n_split: int = 5,
+        max_n_split: int = 5,
         forecast_horizon: int = 7 * 24,
         plotting: bool = False
 ) -> dict | None:
@@ -73,8 +72,8 @@ def cross_validation_without_refit(
         The scaler used for rescaling the data.
     covariates
         Dictionary of covariates to be used during evaluation.
-    n_split
-        Number of splits for cross-validation. Default is 5.
+    max_n_split
+        Maximal number of splits for cross-validation. Default is 5.
     plotting
         Whether to generate plots. Default is False.
     forecast_horizon
@@ -84,22 +83,19 @@ def cross_validation_without_refit(
     -------
     metrics_dict | None
         A dictionary with average values of every metric in `metrics` or `None` in an error case."""
-    for n in range(n_split, -1, -1):
-        next_start_timestamp = start + Timedelta(forecast_horizon * n, 'h')
-        try:
-            series[next_start_timestamp]
-        except:
-            continue
-        else:
-            print(f"n_split is set to {n}")
-            n_split = n
-            break
+    try:
+        possible_n_split = len(series[start:]) // forecast_horizon
+    except ZeroDivisionError:
+        print(f'`forecast_horizon` must be bigger than 0.')
+        return None
+    else:
+        if max_n_split < possible_n_split:
+            possible_n_split = max_n_split
 
     _, covariate_args_inference = get_covariate_args(model, covariates)
     metrics_dict = {metric.__name__: [] for metric in metrics}
 
-    global forecast
-    for n in range(n_split):
+    for n in range(possible_n_split):
         next_start_timestamp = start + Timedelta(forecast_horizon * n, 'h')
         try:
             forecast = model.predict(forecast_horizon, series=series[:next_start_timestamp], **covariate_args_inference,

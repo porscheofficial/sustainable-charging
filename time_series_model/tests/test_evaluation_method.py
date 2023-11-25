@@ -9,18 +9,16 @@ from darts.utils.timeseries_generation import datetime_attribute_timeseries
 from pandas import Timedelta
 from pyarrow import Table
 from pyarrow.parquet import ParquetFile
+from pandas import read_parquet
 
 from time_series_model.src.evaluation_method import cross_validation_without_refit
 
 
 @pytest.fixture(scope='module')
 def setup():
-    model_file_path = os.path.join(os.path.dirname(__file__), '..', 'models', 'lstm_model_preliminary.pkl')
+    model_file_path = os.path.join(os.path.dirname(__file__), 'test_models', 'test_lstm_model.pkl')
 
-    parquet_file = ParquetFile(
-        os.path.join(os.path.dirname(__file__), '..', 'data', 'processed', 'energy_data_processed.parquet'))
-    data = Table.from_batches(batches=[next(parquet_file.iter_batches(batch_size=1000))]).to_pandas()
-
+    data = read_parquet(os.path.join(os.path.dirname(__file__), 'test_data', 'processed_data_5000_rows.parquet'))
     data.set_index("timestamp", inplace=True)
     data = data[data.columns].astype(float)
     series = TimeSeries.from_dataframe(data, fill_missing_dates=True, fillna_value=0)
@@ -49,16 +47,17 @@ def setup():
 
 
 @pytest.mark.parametrize(
-    'start_delta, metrics, n_split, forecast_horizon, plotting, expected_result',
+    'start_delta, metrics, max_n_split, forecast_horizon, plotting, expected_result',
     [
-        (0, [rmse], 5, 7 * 24, False, None),
-        (167, [rmse, coefficient_of_variation], 1, 7 * 24, True, ['rmse', 'coefficient_of_variation']),
+        (0, [rmse], 2, 7 * 24, False, None),
+        (167, [rmse, coefficient_of_variation], 1, 7 * 24, False,
+         {'coefficient_of_variation': 43.45621093238546, 'rmse': 1656.2597046492676}),
         (166, [rmse], 3, 7 * 24, False, None),
-        (167, [rmse], 2, 1, False, ['rmse']),
+        (167, [rmse], 2, 1, False, {'rmse': 2014.2852136265383}),
         (167, [rmse], 2, 0, False, None)
     ]
 )
-def test_evaluation_method(setup, start_delta, metrics, n_split, forecast_horizon, plotting, expected_result):
+def test_evaluation_method(setup, start_delta, metrics, max_n_split, forecast_horizon, plotting, expected_result):
     model, validation_series, data_scaler, covariates = setup
 
     metrics_dict = cross_validation_without_refit(
@@ -68,12 +67,9 @@ def test_evaluation_method(setup, start_delta, metrics, n_split, forecast_horizo
         metrics=metrics,
         data_scaler=data_scaler,
         covariates=covariates,
-        n_split=n_split,
+        max_n_split=max_n_split,
         forecast_horizon=forecast_horizon,
         plotting=plotting
     )
 
-    if expected_result is None:
-        assert metrics_dict == expected_result
-    else:
-        assert (list(metrics_dict.keys()) == expected_result)
+    assert metrics_dict == expected_result
