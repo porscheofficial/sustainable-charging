@@ -135,9 +135,31 @@ class TimeSeriesDataLoader:
         except ValueError:
             return None
 
+
 class SMARDDataLoader(TimeSeriesDataLoader):
-    def __init__(self, file_paths: list[str]):
+    """
+    A class to handle the loading, preprocessing, and saving of SMARD data.
+
+    Attributes:
+        logger (logging.Logger): Logger for the class.
+        file_paths (List[str]): List of file paths to load the data from.
+        data (Optional[pd.DataFrame]): DataFrame to hold the loaded data.
+        train_data (Optional[pd.DataFrame]): DataFrame to hold the training data.
+        test_data (Optional[pd.DataFrame]): DataFrame to hold the testing data.
+        group_renewable_sources (bool): Flag to indicate whether renewable energy sources should be grouped together.
+    """
+    
+    def __init__(self, file_paths: list[str], group_renewable_sources: bool = False):
+        """
+        Initializes the TimeSeriesDataLoader with file paths.
+
+        Args:
+            file_paths (List[str]): List of file paths to load the data from.
+            group_renewable_sources (bool, optional): If set to True, groups renewable energy sources into a single column. Default is False, meaning renewable sources remain as separate columns.
+        """
+        
         super().__init__(file_paths)
+        self.group_renewable_sources = group_renewable_sources
 
     def preprocess_data(self) -> None:
         """
@@ -188,6 +210,10 @@ class SMARDDataLoader(TimeSeriesDataLoader):
         # Rename the columns
         self.data.rename(columns=new_column_names, inplace=True)
 
+        # Group energy sources together as either renewable or not
+        if self.group_renewable_sources:
+            self._group_renewable_sources()
+
         # Check for missing values
         missing_values = self.data.isnull().sum()
 
@@ -228,3 +254,17 @@ class SMARDDataLoader(TimeSeriesDataLoader):
         # Additional validation checks can be added here
 
         self.logger.info("Data validation completed.")
+
+    def _group_renewable_sources(self) -> None:
+        """
+        Groups energy sources into renewable and non-renewable categories.
+        """
+        renewable_sources = ['biomass_mwh', 'hydropower_mwh', 'wind_offshore_mwh', 
+                               'wind_onshore_mwh', 'photovoltaic_mwh', 'other_renewables_mwh']
+        non_renewable_sources = ['nuclear_mwh', 'brown_coal_mwh', 'hard_coal_mwh', 
+                                   'natural_gas_mwh', 'pumped_storage_mwh', 'other_conventional_mwh']
+
+        self.data['renewable_mwh'] = self.data[renewable_sources].sum(axis=1)
+        self.data['non_renewable_mwh'] = self.data[non_renewable_sources].sum(axis=1)
+
+        self.logger.info(Fore.BLUE + "Grouped energy sources into renewable and non-renewable categories." + Style.RESET_ALL)
