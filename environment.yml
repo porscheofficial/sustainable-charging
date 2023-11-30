@@ -21,6 +21,7 @@ dependencies:
   - evaluate
   - accelerate
   - u8darts # For time-series forecasting
+  - optuna
 
   # Good to have
   - numpy
@@ -36,6 +37,7 @@ dependencies:
   - debugpy
   - tqdm
   - jupyterlab
+  - colorama
 
   # Dev dependencies
   - black
