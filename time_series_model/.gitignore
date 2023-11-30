@@ -1,11 +1,3 @@
-data/*
-!data/mock/
-!data/external/
-!data/interim/
-!data/processed/
-!data/raw/
-data/mock/tokenized/*
-logs/
 # experiment output logs
 wandb/
 artifacts/

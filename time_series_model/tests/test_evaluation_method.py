@@ -9,7 +9,7 @@ from darts.utils.timeseries_generation import datetime_attribute_timeseries
 from pandas import Timedelta
 from pandas import read_parquet
 
-from time_series_model.src.evaluation_method import cross_validation_without_refit
+from time_series_model.evaluation_method import cross_validation_without_refit
 
 
 @pytest.fixture(scope='module')
