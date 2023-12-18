@@ -17,6 +17,7 @@ class TimeSeriesDataLoader:
         file_paths (list[str]): List of file paths to load the data from.
         data (Optional[pd.DataFrame]): DataFrame to hold the loaded data.
         train_data (Optional[pd.DataFrame]): DataFrame to hold the training data.
+        validation_data (Optional[pd.DataFrame]): DataFrame to hold the validation data.
         test_data (Optional[pd.DataFrame]): DataFrame to hold the testing data.
     """
 
@@ -30,6 +31,7 @@ class TimeSeriesDataLoader:
         self.file_paths = file_paths
         self.data = None
         self.train_data = None
+        self.validation_data = None
         self.test_data = None
 
     def load_data(self) -> None:
@@ -52,12 +54,14 @@ class TimeSeriesDataLoader:
         """
         Splits the data into training and test sets based on a cutoff date.
         """
-        cutoff_date = '2023-03-31'
-        self.train_data = self.data.loc[self.data['timestamp'] <= cutoff_date]
-        self.test_data = self.data.loc[self.data['timestamp'] > cutoff_date]
+        train_cutoff_date = '2022-03-05'
+        validation_cutoff_date = '2023-03-05'
+        self.train_data = self.data.loc[self.data['timestamp'] <= train_cutoff_date]
+        self.validation_data = self.data.loc[(self.data['timestamp'] > train_cutoff_date) & (self.data['timestamp'] <= validation_cutoff_date)]
+        self.test_data = self.data.loc[self.data['timestamp'] > validation_cutoff_date]
         logger.info("Data split into training and test sets.")
 
-    def save_data(self, train_path: str, test_path: str) -> None:
+    def save_data(self, train_path: str, validation_path: str, test_path: str) -> None:
         """
         Saves the processed training and testing data to specified paths.
 
@@ -68,6 +72,10 @@ class TimeSeriesDataLoader:
         if self.train_data is not None:
             self.train_data.to_parquet(train_path)
             logger.info(Fore.GREEN + f"Training data successfully saved to: {train_path}" + Style.RESET_ALL)
+
+        if self.validation_data is not None:
+            self.validation_data.to_parquet(validation_path)
+            logger.info(Fore.GREEN + f"Validation data successfully saved to: {validation_path}" + Style.RESET_ALL)
 
         if self.test_data is not None:
             self.test_data.to_parquet(test_path)
@@ -92,13 +100,15 @@ class TimeSeriesDataLoader:
         Returns the loaded and processed DataFrame.
 
         Args:
-            dataset (str): The dataframe to return ("train", or "test").
+            dataset (str): The dataframe to return ("train", "validation", or "test").
 
         Returns:
             Optional[pd.DataFrame]: The processed DataFrame, or None if no data is loaded.
         """
         if dataset == "train":
             return self.train_data
+        elif dataset == "validation":
+            return self.validation_data
         elif dataset == "test":
             return self.test_data
 
@@ -128,6 +138,7 @@ class SMARDDataLoader(TimeSeriesDataLoader):
         file_paths (List[str]): List of file paths to load the data from.
         data (Optional[pd.DataFrame]): DataFrame to hold the loaded data.
         train_data (Optional[pd.DataFrame]): DataFrame to hold the training data.
+        validation_data (Optional[pd.DataFrame]): DataFrame to hold the validation data.
         test_data (Optional[pd.DataFrame]): DataFrame to hold the testing data.
         group_renewable_sources (bool): Flag to indicate whether renewable energy sources should be grouped together.
     """
@@ -236,7 +247,7 @@ class SMARDDataLoader(TimeSeriesDataLoader):
 
         # Additional validation checks can be added here
 
-        self.logger.info("Data validation completed.")
+        logger.info("Data validation completed.")
 
     def _group_renewable_sources(self) -> None:
         """
@@ -250,4 +261,4 @@ class SMARDDataLoader(TimeSeriesDataLoader):
         self.data['renewable_mwh'] = self.data[renewable_sources].sum(axis=1)
         self.data['non_renewable_mwh'] = self.data[non_renewable_sources].sum(axis=1)
 
-        self.logger.info(Fore.BLUE + "Grouped energy sources into renewable and non-renewable categories." + Style.RESET_ALL)
+        logger.info(Fore.BLUE + "Grouped energy sources into renewable and non-renewable categories." + Style.RESET_ALL)
