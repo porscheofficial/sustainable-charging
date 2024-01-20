@@ -37,5 +37,5 @@ class CommuteEntity(CamelModel):
     is_round_trip: bool
     usage: list[UsageEntry]
     approx_distance_km: float
-    approx_distance_minutes: float
+    approx_duration_minutes: float
     traffic: TrafficLevel
