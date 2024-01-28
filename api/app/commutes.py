@@ -1,8 +1,6 @@
-from datetime import datetime
 from fastapi import APIRouter
-from firestore import db
-from schemas import CommuteEntity
-import datetime
+from app.firestore import db
+from app.schemas import CommuteEntity
 
 router = APIRouter(
     prefix='/commutes',

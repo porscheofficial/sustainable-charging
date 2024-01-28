@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
-import commutes as commutes
+from app import commutes
 
 app = FastAPI()
 
