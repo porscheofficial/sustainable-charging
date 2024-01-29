@@ -1,0 +1,13 @@
+RNNModel(
+    model=LSTM,
+    hidden_dim=64, 
+    n_rnn_layers=3, 
+    dropout=0.028777667213468805, 
+    training_length=424, 
+    input_chunk_length=212, 
+    n_epochs=5, 
+    force_reset=True
+)
+
+Test metrics
+{'rmse': 2405.603, 'co2_rmse': 404224.84661184676}
