@@ -1,0 +1,3 @@
+Forgot to mkdir the output directory, but result from the console: 
+
+Test CO2 RMSE: 617267.9005603628

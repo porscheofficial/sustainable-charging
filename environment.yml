@@ -50,6 +50,7 @@ dependencies:
       - pipx
       - simple_parsing
       - print-on-steroids[exceptions]
+      - meteostat
 
 # Non-standard section listing target platforms for conda-lock:
 platforms:
