@@ -8,21 +8,21 @@ router = APIRouter(
 )
 
 @router.get("/", response_model=list[CommuteEntity])
-async def get_commutes() -> list[CommuteEntity]:
+async def get_commutes(user_id: str) -> list[CommuteEntity]:
     """
-    Get all the commutes (not user specific yet)
+    Get all the commutes filtered by a specific user.
     """
     
     # Get all the commutes
-    commutes = db.collection('commutes').stream()
+    commutes = db.collection('commutes').where('user_id', '==', user_id).stream()
 
     # Return the commutes
-    return [commute.to_dict() for commute in commutes]
+    return [CommuteEntity(**commute.to_dict()) for commute in commutes]
 
 @router.post("/")
 async def add_commute(commute: CommuteEntity):
     """
-    Add a new commute (not user specific yet)
+    Add a new commute to the database.
     """
 
     # Create a new document reference with an auto-generated ID

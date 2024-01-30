@@ -1,6 +1,5 @@
 from pydantic import field_validator
 from enum import Enum
-import datetime
 from fastapi_camelcase import CamelModel
 import re
 
@@ -33,6 +32,7 @@ class TrafficLevel(str, Enum):
     HIGH = "HIGH"
 
 class CommuteEntity(CamelModel):
+    user_id: str
     name: str
     is_round_trip: bool
     usage: list[UsageEntry]
