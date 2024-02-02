@@ -1,23 +1,8 @@
 from datetime import datetime, time, timedelta
 import functools
 import pandas as pd
-from api.app.schemas import CommuteEntity
-
-
-CO2_COEFFICIENTS = {
-    "Coal—PC": 820,
-    "Gas—Combined Cycle": 490,
-    "Biomass—cofiring": 740,
-    "Biomass—dedicated": 230,
-    "Geothermal": 38,
-    "Hydropower": 24,
-    "Nuclear": 12,
-    "Concentrated Solar Power": 27,
-    "Solar PV—rooftop": 41,
-    "Solar PV—utility": 48,
-    "Wind onshore": 11,
-    "Wind offshore": 12,
-}
+from api.app.schemas import CommuteEntity, CarModel
+from time_series_model.emission_factors import EMISSION_FACTORS
 
 WEEK_DAYS = {"MON": 0, "TUE": 1, "WED": 2, "THU": 3, "FRI": 4, "SAT": 5, "SUN": 6}
 
@@ -26,20 +11,15 @@ def get_soc_curve_from_commutes(
     commutes: list[CommuteEntity],
     start: datetime,
     initial_soc: float,
-    battery_capacity: float,
+    car_model: CarModel,
 ) -> pd.Series:
     seven_day_hourly_index = pd.date_range(start=start, periods=7 * 24, freq="H")
     soc_curve = pd.Series(
         [initial_soc] * len(seven_day_hourly_index), index=seven_day_hourly_index
     )
 
-    # data in Wh/km from https://ev-database.org/car/1237/Porsche-Taycan-4S
-    # only taking CITY for now as we differentiate between traffic levels instead of road type
-    # but would make sense to think about this one again
-    taycan_consumption = {
-        "CITY": 158,
-        "HIGHWAY": 217,
-    }
+    if len(commutes) == 0:
+        return soc_curve
 
     trips = []
     for commute in commutes:
@@ -48,14 +28,16 @@ def get_soc_curve_from_commutes(
 
             # we should store trip.day as integers instead of strings
             trip_start = (
-                start + timedelta(days=((WEEK_DAYS[trip.day] - start.weekday) % 7))
+                start + timedelta(days=((WEEK_DAYS[trip.day] - start.weekday()) % 7))
             ).replace(
                 hour=start_time.hour, minute=start_time.minute, second=0, microsecond=0
             )
             trip_end = trip_start + timedelta(minutes=commute.approx_distance_minutes)
             trip_soc_change = (
-                taycan_consumption["CITY"] * commute.approx_distance_km
-            ) / (10 * battery_capacity) # (Wh/km * km * 100) / (1000 * Wh) = %
+                car_model.consumption_per_kilometer * commute.approx_distance_km
+            ) / (
+                10 * car_model.battery_capacity
+            )  # (Wh/km * km * 100) / (1000 * Wh) = %
             trips.append((trip_start, trip_end, trip_soc_change))
 
     trips.sort(key=lambda t: t[1])
@@ -82,8 +64,7 @@ def get_soc_curve_from_commutes(
 
 
 def get_time_to_charge(
-    battery_capacity: float,
-    charging_curve: list[float],
+    car_model: CarModel,
     current_soc: int,
     target_soc: int = 80,
     efficiency: float = 0.9,
@@ -102,10 +83,10 @@ def get_time_to_charge(
         The estimated time to charge in h
     """
 
-    one_percent_capacity = battery_capacity / 100
+    one_percent_capacity = car_model.battery_capacity / 100
     charging_rates = zip(
-        charging_curve[current_soc:target_soc],
-        charging_curve[current_soc + 1 : target_soc + 1],
+        car_model.charging_curve[current_soc:target_soc],
+        car_model.charging_curve[current_soc + 1 : target_soc + 1],
     )
 
     return (
@@ -118,8 +99,7 @@ def get_time_to_charge(
 
 
 def get_charging_windows(
-    battery_capacity: float,
-    charging_curve: list[float],
+    car_model: CarModel,
     soc_curve: pd.Series,
     energy_mix: pd.DataFrame,
     min_soc: int = 20,
@@ -141,25 +121,29 @@ def get_charging_windows(
 
     def to_absolute_emissions(col: pd.Series):
         if col.name not in ["datetime", "Sum"]:
-            return col * CO2_COEFFICIENTS[col.name]
+            return col * EMISSION_FACTORS[col.name]
         return col
 
     get_time_to_fully_charge = functools.partial(
-        get_time_to_charge,
-        battery_capacity=battery_capacity,
-        charging_curve=charging_curve,
+        get_time_to_charge, car_model=car_model
     )
 
     df = energy_mix.apply(to_absolute_emissions, axis=0)
     df["soc"] = soc_curve
+    # if energy mix datetime does not perfectly match  soc datetime df is empty after next step
+    # (as df("soc") will be NaN
     df = df[(df["soc"] >= min_soc) & (df["soc"] < max_soc)]
     emission_cols = [col for col in df.columns if col not in ["datetime", "soc"]]
     df["Sum"] = df[emission_cols].sum(axis=1)
+
     df["finish_time"] = df.apply(
         lambda row: row["datetime"]
         + timedelta(hours=get_time_to_fully_charge(current_soc=row["soc"])),
         axis=1,
     )
+    # df["finish_time"] = df["datetime"].apply(
+    #    lambda dt: dt + timedelta(hours=get_time_to_fully_charge(df['soc'].iloc[0])))
+
     df["charging_emissions"] = df.apply(
         lambda row: df[
             (df["datetime"] >= row["datetime"])
@@ -167,6 +151,7 @@ def get_charging_windows(
         ]["Sum"].sum(),
         axis=1,
     )
+
     df["cost"] = df.apply(
         lambda row: row["charging_emissions"] * (max_soc - row["soc"]), axis=1
     )
