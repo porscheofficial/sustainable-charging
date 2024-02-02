@@ -1,7 +1,8 @@
 from fastapi import FastAPI
-import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
-from app import commutes
+import uvicorn
+import commutes
+import schedule
 
 app = FastAPI()
 
@@ -15,13 +16,16 @@ app.add_middleware(
 )
 
 app.include_router(commutes.router)
+app.include_router(schedule.router)
 
 @app.get("/")
 async def main():
     return "Mo was here"
 
+
 def main():
     uvicorn.run(app, host="localhost", port=8000)
+
 
 if __name__ == "__main__":
     main()

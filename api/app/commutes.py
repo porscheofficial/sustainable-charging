@@ -31,9 +31,6 @@ async def add_commute(commute: CommuteEntity):
     # Save the commute data
     doc_ref.set(commute.model_dump())
 
-    # TODO: Call the scheduler to schedule the commute and store it in the database (@william)
-    # We can either store it in the same document or create a new collection for scheduled commutes and reference the commute ID
-
     # Return the ID of the newly created document
     return {"id": doc_ref.id, "message": "Commute added successfully!"}
 
