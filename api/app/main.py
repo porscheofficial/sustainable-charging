@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-import commutes
-import schedule
+from app.routers import commutes, schedule
 
 app = FastAPI()
 
@@ -17,6 +16,7 @@ app.add_middleware(
 
 app.include_router(commutes.router)
 app.include_router(schedule.router)
+
 
 @app.get("/")
 async def main():

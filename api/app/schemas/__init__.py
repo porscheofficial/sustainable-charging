@@ -60,7 +60,9 @@ class CarModel(CamelModel):
     @field_validator("charging_curve")
     def validate_charging_curve(cls, v):
         if len(v) != 101:
-            raise ValueError("The charging curve has to have exactly 101 values.")
+            raise ValueError(
+                f"The charging curve must have exactly 101 values, {len(v)} given."
+            )
         return v
 
 
