@@ -1,10 +1,8 @@
-# AI in Practice: Porsche Digital Challenge
+# Chargify: Sustainable EV Charging
 
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-![Linter](https://img.shields.io/badge/linter-ruff-blue)
 ![License: MIT](https://img.shields.io/github/license/konstantinjdobler/nlp-research-template?color=green)
 
-This repository is part of the AI in Practice: Porsche Digital Challenge, a collaborative project focused on energy mix prediction.
+This repository holds the code for Chargify, focused on machine learning based EV charge scheduling. This project started in the AI in Practice course together with Porsche Digital.
 
 ## Contribution Guidelines
 
