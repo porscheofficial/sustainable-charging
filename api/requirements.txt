@@ -3,3 +3,4 @@ pydantic==2.5.3
 uvicorn==0.25.0
 firebase-admin==6.3.0
 fastapi-camelcase==2.0.0
+pandas==2.2.1
