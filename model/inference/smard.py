@@ -51,6 +51,10 @@ def fetch_energy_data(session, url, energy_type):
             }
         else:
             logger.error(f"Error fetching data for {energy_type}: Status code {response.status_code}")
+            return {
+                "timestamp": [0.0 for x in range(0, 168)],
+                energy_type: [0.0 for x in range(0, 168)]
+            }
             return None
     except requests.RequestException as e:
         logger.error(f"Request exception for {energy_type}: {e}")
