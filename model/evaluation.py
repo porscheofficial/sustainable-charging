@@ -70,7 +70,10 @@ def cross_validation_without_refit(
     start = prefix_series.end_time()
     n_split = len(test_series[start:]) // forecast_horizon
     ranges = [
-        (start + Timedelta(hours=forecast_horizon * i), start + Timedelta(hours=forecast_horizon * (i + 1)))
+        (
+            start + Timedelta(hours=forecast_horizon * i),
+            start + Timedelta(hours=forecast_horizon * (i + 1)),
+        )
         for i in range(n_split)
     ]
     ranges = [(start, end) for start, end in ranges if end <= full_series.end_time()]
@@ -87,7 +90,9 @@ def cross_validation_without_refit(
         if refit:
             # Get training data
             if truncate_refit_train_dataset is not None:
-                train = full_series_scaled[max(0, start - truncate_refit_train_dataset) : start]
+                train = full_series_scaled[
+                    max(0, start - truncate_refit_train_dataset) : start
+                ]
             else:
                 train = full_series_scaled[:start]
 
@@ -96,7 +101,10 @@ def cross_validation_without_refit(
 
         # Run model prediction
         forecast = model.predict(
-            forecast_horizon, series=full_series_scaled[:start], **covariate_args_inference, verbose=False
+            forecast_horizon,
+            series=full_series_scaled[:start],
+            **covariate_args_inference,
+            verbose=False,
         )
 
         # Rescale forecast and original data

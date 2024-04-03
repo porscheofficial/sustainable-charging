@@ -10,9 +10,15 @@ from model.util import fix_float64
 
 def get_covariates_time(reference_series: TimeSeries) -> TimeSeries:
     # Create time covariates
-    weekday = datetime_attribute_timeseries(reference_series, attribute="weekday", dtype=np.float32)
-    month = datetime_attribute_timeseries(reference_series, attribute="month", dtype=np.float32)
-    hour = datetime_attribute_timeseries(reference_series, attribute="hour", dtype=np.float32)
+    weekday = datetime_attribute_timeseries(
+        reference_series, attribute="weekday", dtype=np.float32
+    )
+    month = datetime_attribute_timeseries(
+        reference_series, attribute="month", dtype=np.float32
+    )
+    hour = datetime_attribute_timeseries(
+        reference_series, attribute="hour", dtype=np.float32
+    )
     covariates_time = weekday.stack(hour).stack(month)
 
     # Always scale time covariates
@@ -37,7 +43,10 @@ def add_rolling_mean(data: TimeSeries, lag: int):
 
     # Apply transformation
     transformed_timeseries = transformed_timeseries.window_transform(
-        transforms=transformation, forecasting_safe=False, include_current=False, treat_na=0
+        transforms=transformation,
+        forecasting_safe=False,
+        include_current=False,
+        treat_na=0,
     )
     transformed_timeseries = transformed_timeseries.shift(lag)
     transformed_timeseries = transformed_timeseries.astype(data.dtype)
@@ -60,8 +69,12 @@ def add_rolling_mean(data: TimeSeries, lag: int):
 
 def add_kinetic_wind_energy_simplified(weather_data: TimeSeries) -> TimeSeries:
     kinetic_wind_energy_simplified = weather_data["wspd"] ** 2 * weather_data["pres"]
-    kinetic_wind_energy_simplified = kinetic_wind_energy_simplified.with_columns_renamed(
-        kinetic_wind_energy_simplified.columns, ["kinetic_wind_energy"]
+    kinetic_wind_energy_simplified = (
+        kinetic_wind_energy_simplified.with_columns_renamed(
+            kinetic_wind_energy_simplified.columns, ["kinetic_wind_energy"]
+        )
     )
-    kinetic_wind_energy_simplified = kinetic_wind_energy_simplified.astype(weather_data.dtype)
+    kinetic_wind_energy_simplified = kinetic_wind_energy_simplified.astype(
+        weather_data.dtype
+    )
     return weather_data.stack(kinetic_wind_energy_simplified)

@@ -37,7 +37,7 @@ def get_soc_curve_from_commutes(
         start: The time and date when the prediction should start
         initial_soc: The initial state of charge
         car_model: The car model of which the SOC should be predicted
-    
+
     Returns:
         A pandas.Series with the hourly predicted SOC over the next seven days.
     """

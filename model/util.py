@@ -31,7 +31,11 @@ def fix_float64(data: pd.DataFrame) -> pd.DataFrame:
 def convert_df_to_time_series(df: pd.DataFrame):
     df = df.set_index("timestamp")
     time_series = TimeSeries.from_dataframe(
-        df, value_cols=list(df.columns), fill_missing_dates=True, fillna_value=0, freq="1H"
+        df,
+        value_cols=list(df.columns),
+        fill_missing_dates=True,
+        fillna_value=0,
+        freq="1H",
     )
 
     return time_series

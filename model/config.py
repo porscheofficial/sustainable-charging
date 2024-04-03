@@ -17,8 +17,12 @@ SMARD_DATA_PATHS = [
     os.path.join(RAW_DATA_PATH, "data/raw/2021_2022.csv"),
     os.path.join(RAW_DATA_PATH, "data/raw/2022_2023.csv"),
 ]
-WEATHER_DATA_SOLAR_PATH = os.path.join(RAW_DATA_PATH, "data/raw/weather_data_solar_stations.csv")
-WEATHER_DATA_WIND_PATH = os.path.join(RAW_DATA_PATH, "data/raw/weather_data_wind_stations.csv")
+WEATHER_DATA_SOLAR_PATH = os.path.join(
+    RAW_DATA_PATH, "data/raw/weather_data_solar_stations.csv"
+)
+WEATHER_DATA_WIND_PATH = os.path.join(
+    RAW_DATA_PATH, "data/raw/weather_data_wind_stations.csv"
+)
 
 # Smard data columns are renamed to be more readable
 SMARD_COLUMN_RENAMES = {

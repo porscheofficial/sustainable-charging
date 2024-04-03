@@ -24,7 +24,11 @@ def fit_model(
         model=model,
         covariates=covariates,
     )[0]
-    model.fit(series=scaler_smard.transform(train), val_series=scaler_smard.transform(val), **covariate_args)
+    model.fit(
+        series=scaler_smard.transform(train),
+        val_series=scaler_smard.transform(val),
+        **covariate_args,
+    )
 
 
 def get_model(model_name: str, model_hparams) -> ForecastingModel:
@@ -40,7 +44,20 @@ def get_model(model_name: str, model_hparams) -> ForecastingModel:
             force_reset=True,
         )
     elif model_name == "XGBoost":
-        lags = [-1, -2, -3, -4, -8, -16, -24, -24 * 2, -24 * 7, -24 * 7 * 2, -24 * 7 * 4, -24 * 7 * 8]
+        lags = [
+            -1,
+            -2,
+            -3,
+            -4,
+            -8,
+            -16,
+            -24,
+            -24 * 2,
+            -24 * 7,
+            -24 * 7 * 2,
+            -24 * 7 * 4,
+            -24 * 7 * 8,
+        ]
         return XGBModel(
             max_depth=model_hparams["max_depth"],
             n_estimators=model_hparams["n_estimators"],
@@ -72,7 +89,9 @@ def main():
     parser.add_argument("--output_dir", type=str)
     parser.add_argument("--disable_scaling", default=False, action="store_true")
     parser.add_argument("--disable_weather", default=False, action="store_true")
-    parser.add_argument("--enable_feature_engineering", default=False, action="store_true")
+    parser.add_argument(
+        "--enable_feature_engineering", default=False, action="store_true"
+    )
     parser.add_argument("--enable_refit", default=False, action="store_true")
     args = parser.parse_args()
     scaling = not args.disable_scaling

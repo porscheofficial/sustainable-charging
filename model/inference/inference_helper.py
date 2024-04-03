@@ -64,10 +64,16 @@ class InferenceHelper:
             weather_data_columns=["wspd", "pres", "temp", "tsun", "prcp"],
         )
 
-    def predict(self, smard_data: TimeSeries, weather_data: TimeSeries, n_steps_ahead: int) -> TimeSeries:
+    def predict(
+        self, smard_data: TimeSeries, weather_data: TimeSeries, n_steps_ahead: int
+    ) -> TimeSeries:
         covariates_time = get_covariates_time(weather_data)
         covariates = weather_data.stack(covariates_time)
-        _, covariate_args_inference = get_covariate_args_for_model(self.model, covariates)
-        result = self.model.predict(n_steps_ahead, series=smard_data, **covariate_args_inference, verbose=False)
+        _, covariate_args_inference = get_covariate_args_for_model(
+            self.model, covariates
+        )
+        result = self.model.predict(
+            n_steps_ahead, series=smard_data, **covariate_args_inference, verbose=False
+        )
         result = self.scaler.inverse_transform(result)
         return result

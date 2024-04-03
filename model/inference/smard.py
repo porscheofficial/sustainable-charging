@@ -13,21 +13,26 @@ logger = logging.getLogger(__name__)
 def get_week_start_dates_until_cutoff(n_lookback):
     """Returns a list of the start dates of weeks from now until the given cutoff date at 00:00:00"""
     current_date = datetime.now()
-    current_date = current_date.replace(hour=0, minute=0, second=0, microsecond=0)  # Start from beginning of today
-    current_date -= timedelta(days=current_date.weekday()) # Adjust current_date to the start of the current week
-    
+    current_date = current_date.replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )  # Start from beginning of today
+    current_date -= timedelta(
+        days=current_date.weekday()
+    )  # Adjust current_date to the start of the current week
+
     cutoff_date = current_date - timedelta(hours=n_lookback)
-    
+
     # Calculate the number of weeks between current_date and cutoff_date, rounding up for partial weeks
     days_diff = (current_date - cutoff_date).days
     num_weeks = days_diff // 7 + (2 if days_diff % 7 != 0 else 1)
-    
+
     week_starts = []
     for i in range(num_weeks):
         week_starts.append(current_date)
         current_date -= timedelta(days=7)  # Move back one week
 
     return week_starts
+
 
 def fetch_energy_data(session, url, energy_type):
     """
@@ -47,13 +52,15 @@ def fetch_energy_data(session, url, energy_type):
             series = response_data["series"]
             return {
                 "timestamp": [x[0] for x in series],
-                energy_type: [x[1] for x in series]
+                energy_type: [x[1] for x in series],
             }
         else:
-            logger.error(f"Error fetching data for {energy_type}: Status code {response.status_code}")
+            logger.error(
+                f"Error fetching data for {energy_type}: Status code {response.status_code}"
+            )
             return {
                 "timestamp": [0.0 for x in range(0, 168)],
-                energy_type: [0.0 for x in range(0, 168)]
+                energy_type: [0.0 for x in range(0, 168)],
             }
             return None
     except requests.RequestException as e:
@@ -100,11 +107,13 @@ def fetch_smard_data(n_lookback):
 
     with requests.Session() as session:
         for week_start_date in week_start_dates:
-            week_start_timestamp = int(week_start_date.timestamp() * 1000)  # Convert to milliseconds
+            week_start_timestamp = int(
+                week_start_date.timestamp() * 1000
+            )  # Convert to milliseconds
             weekly_data = {}
 
             for energy_type, code in energy_type_to_code_mapping.items():
-                url = f"https://smard.api.proxy.bund.dev/app/chart_data/{code}/DE/{code}_DE_hour_{week_start_timestamp}.json"                
+                url = f"https://smard.api.proxy.bund.dev/app/chart_data/{code}/DE/{code}_DE_hour_{week_start_timestamp}.json"
                 energy_data = fetch_energy_data(session, url, energy_type)
                 if energy_data:
                     if "timestamp" not in weekly_data:
@@ -113,11 +122,15 @@ def fetch_smard_data(n_lookback):
 
             if weekly_data:
                 weekly_df = pd.DataFrame(weekly_data)
-                weekly_df["timestamp"] = pd.to_datetime(weekly_df["timestamp"], unit="ms")
+                weekly_df["timestamp"] = pd.to_datetime(
+                    weekly_df["timestamp"], unit="ms"
+                )
                 all_data_frames.append(weekly_df)
 
     # Concatenate all weekly data frames
-    full_df = pd.concat(all_data_frames).sort_values(by="timestamp").reset_index(drop=True)
+    full_df = (
+        pd.concat(all_data_frames).sort_values(by="timestamp").reset_index(drop=True)
+    )
 
     # Find the last valid index (non-NaN row)
     last_valid_index = full_df.dropna(how="any").last_valid_index()
