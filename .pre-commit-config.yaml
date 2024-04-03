@@ -12,7 +12,7 @@ repos:
       - id: mypy
         args:
           [
-            '--exclude="((?:logs|datasets|output|PixelFormer|frames_detected|model_weights|venv|yolov[0-9]))"',
+            '--exclude="((?:data|experiments|model_results|venv))"',
             "--ignore-missing-imports",
           ]
 
@@ -27,7 +27,7 @@ repos:
           [
             "--exit-zero",
             "--output-format=text",
-            '--ignore-patterns="((?:logs|datasets|output|frames_detected|model_weights|venv|yolov[0-9]))"',
+            '--ignore-patterns="((?:data|experiments|model_results|venv))"',
           ]
 
   - repo: https://github.com/PyCQA/pydocstyle
@@ -38,5 +38,5 @@ repos:
           [
             "--ignore-self-only-init",
             "--ignore=D100,D104,D213,D203,D404",
-            '--match-dir="^(?:(?!logs|datasets|output|PixelFormer|frames_detected|model_weights|notebooks|venv|yolov[0-9]).)*$"',
+            '--match-dir="^(?:(?!data|experiments|model_results|venv).)*$"',
           ]

@@ -32,7 +32,13 @@ def fetch_weather_data(last_timestamp, n_lookback, n_lookahead):
     wind_stations_data = wind_stations_data.aggregate("1H", spatial=True)
     wind_stations_data = wind_stations_data.fetch()
 
-    weather_data = pd.concat([solar_stations_data[["temp", "tsun"]], wind_stations_data[["wspd", "pres", "prcp"]]], axis=1)
+    weather_data = pd.concat(
+        [
+            solar_stations_data[["temp", "tsun"]],
+            wind_stations_data[["wspd", "pres", "prcp"]],
+        ],
+        axis=1,
+    )
     weather_data = weather_data.reset_index(names=["timestamp"])
 
     weather_data = fix_float64(weather_data)
