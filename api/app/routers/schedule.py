@@ -27,8 +27,8 @@ async def get_schedule(
     Get schedule for list of commute_ids (as app is not user specific yet)
     """
 
-    user = get_user_by_id(user_id)
-    car = get_car_model_by_id(user.car_model_id)
+    user = get_user_by_id(user_id)  # type: ignore
+    car = get_car_model_by_id(user.car_model_id)  # type: ignore
 
     # Get all the commutes for the given user
     commutes = [

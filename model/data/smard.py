@@ -1,9 +1,5 @@
 import logging
-from typing import Optional
-
 import pandas as pd
-from colorama import Fore, Style
-from darts import TimeSeries
 
 from model import config
 from model.util import (
@@ -17,16 +13,27 @@ logger = logging.getLogger(__name__)
 
 def load():
     # Load data files
-    data = pd.concat([pd.read_csv(file, delimiter=";") for file in config.SMARD_DATA_PATHS], ignore_index=True)
+    data = pd.concat(
+        [pd.read_csv(file, delimiter=";") for file in config.SMARD_DATA_PATHS],
+        ignore_index=True,
+    )
 
     # Preprocess data
     data = _preprocess(data)
 
     # Split data into sets
     train_data = data.loc[data["timestamp"] <= config.TRAIN_END_DATE]
-    validation_data = data.loc[(data["timestamp"] > config.TRAIN_END_DATE) & (data["timestamp"] <= config.VAL_END_DATE)]
+    validation_data = data.loc[
+        (data["timestamp"] > config.TRAIN_END_DATE)
+        & (data["timestamp"] <= config.VAL_END_DATE)
+    ]
     test_data = data.loc[data["timestamp"] > config.VAL_END_DATE]
-    logger.info(f"Data split into sets: train={len(train_data)}, val={len(validation_data)}, test={len(test_data)}")
+    logger.info(
+        "Data split into sets: train=%s, val=%s, test=%s",
+        len(train_data),
+        len(validation_data),
+        len(test_data),
+    )
 
     # Convert to darts TimeSeries
     train_data = convert_df_to_time_series(train_data)
@@ -35,9 +42,17 @@ def load():
 
     # Log split start and end dates
     logger.info("Data split into sets:")
-    logger.info(f"  train: {train_data.start_time().date()} - {train_data.end_time().date()}")
-    logger.info(f"  val:   {validation_data.start_time().date()} - {validation_data.end_time().date()}")
-    logger.info(f"  test:  {test_data.start_time().date()} - {test_data.end_time().date()}")
+    logger.info(
+        "  train: %s - %s", train_data.start_time().date(), train_data.end_time().date()
+    )
+    logger.info(
+        "  val:   %s - %s",
+        validation_data.start_time().date(),
+        validation_data.end_time().date(),
+    )
+    logger.info(
+        "  test:  %s - %s", test_data.start_time().date(), test_data.end_time().date()
+    )
 
     return (train_data, validation_data, test_data)
 
@@ -56,7 +71,9 @@ def _preprocess(data: pd.DataFrame) -> pd.DataFrame:
         data[col] = data[col].apply(convert_comma_str_to_float)
 
     # Combine "Datum" and "Anfang" into a single datetime column
-    data["Timestamp"] = pd.to_datetime(data["Datum"].astype(str) + " " + data["Anfang"].astype(str))
+    data["Timestamp"] = pd.to_datetime(
+        data["Datum"].astype(str) + " " + data["Anfang"].astype(str)
+    )
 
     # Drop the "Datum", "Anfang", and "Ende" columns
     data = data.drop(columns=["Datum", "Anfang", "Ende"])
@@ -69,7 +86,9 @@ def _preprocess(data: pd.DataFrame) -> pd.DataFrame:
 
     # Check for missing values
     missing_values = data.isnull().sum()
-    assert missing_values.sum() == 0, f"There are missing values in the SMARD data. Missing values: {missing_values}"
+    assert (
+        missing_values.sum() == 0
+    ), f"There are missing values in the SMARD data. Missing values: {missing_values}"
 
     # Some timestamps are duplicates, remove them
     data = data.drop_duplicates(subset="timestamp")

@@ -1,11 +1,7 @@
 import numpy as np
 from darts import TimeSeries
 from darts.dataprocessing.transformers import Scaler
-from darts.models.filtering.moving_average_filter import MovingAverageFilter
 from darts.utils.timeseries_generation import datetime_attribute_timeseries
-
-from model import config
-from model.util import fix_float64
 
 
 def get_covariates_time(reference_series: TimeSeries) -> TimeSeries:

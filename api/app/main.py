@@ -20,12 +20,8 @@ app.include_router(schedule.router)
 
 @app.get("/")
 async def main():
-    return "Mo was here"
-
-
-def main():
-    uvicorn.run(app, host="localhost", port=8000)
+    return "Welcome to the Chargify API"
 
 
 if __name__ == "__main__":
-    main()
+    uvicorn.run(app, host="localhost", port=8000)

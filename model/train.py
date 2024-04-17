@@ -25,13 +25,13 @@ def fit_model(
         covariates=covariates,
     )[0]
     model.fit(
-        series=scaler_smard.transform(train),
-        val_series=scaler_smard.transform(val),
+        series=scaler_smard.transform(train),  # type: ignore
+        val_series=scaler_smard.transform(val),  # type: ignore
         **covariate_args,
     )
 
 
-def get_model(model_name: str, model_hparams) -> ForecastingModel:
+def get_model(model_name: str, model_hparams) -> ForecastingModel | None:
     if model_name == "LSTM":
         return RNNModel(
             model="LSTM",
@@ -43,7 +43,7 @@ def get_model(model_name: str, model_hparams) -> ForecastingModel:
             n_epochs=5,
             force_reset=True,
         )
-    elif model_name == "XGBoost":
+    if model_name == "XGBoost":
         lags = [
             -1,
             -2,
@@ -66,6 +66,8 @@ def get_model(model_name: str, model_hparams) -> ForecastingModel:
             verbosity=0,
         )
 
+    return None
+
 
 def get_model_hparams(model_name: str, trial) -> dict:
     if model_name == "LSTM":
@@ -75,11 +77,13 @@ def get_model_hparams(model_name: str, trial) -> dict:
             dropout=trial.suggest_float("dropout", 0.0, 0.5),
             n_rnn_layers=trial.suggest_int("n_rnn_layers", 1, 3),
         )
-    elif model_name == "XGBoost":
+    if model_name == "XGBoost":
         return dict(
             max_depth=trial.suggest_int("max_depth", 5, 10),
             n_estimators=trial.suggest_int("n_estimators", 100, 1000),
         )
+
+    return {}
 
 
 def main():
@@ -177,11 +181,11 @@ def main():
 
     # Print results
     print(f"Test CO2 RMSE: {metrics['co2_rmse']}")
-    with open(f"{args.output_dir}/result.txt", "w") as f:
-        f.write(str(model))
-        f.write("\n\n")
-        f.write("Test metrics\n")
-        f.write(str(metrics))
+    with open(f"{args.output_dir}/result.txt", "w") as file:  # pylint: disable=W1514
+        file.write(str(model))
+        file.write("\n\n")
+        file.write("Test metrics\n")
+        file.write(str(metrics))
 
     # Save model
     model.save(f"{args.output_dir}/model")

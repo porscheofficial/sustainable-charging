@@ -14,6 +14,8 @@ repos:
           [
             '--exclude="((?:data|experiments|model_results|venv))"',
             "--ignore-missing-imports",
+            "--install-types",
+            "--non-interactive"
           ]
 
   - repo: local
@@ -27,6 +29,8 @@ repos:
           [
             "--exit-zero",
             "--output-format=text",
+            "--recursive=true",
+            "--disable=C0114,C0115,C0116,F0010,E0401,R0914,R1702,R1735,R0912,R0915,R0913,R0903",
             '--ignore-patterns="((?:data|experiments|model_results|venv))"',
           ]
 
