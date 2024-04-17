@@ -3,24 +3,9 @@ from math import floor
 import functools
 import pandas as pd
 from app.schemas import CommuteEntity, CarModel
+from model import config
 
 WEEK_DAYS = {"MON": 0, "TUE": 1, "WED": 2, "THU": 3, "FRI": 4, "SAT": 5, "SUN": 6}
-
-# Emission factors in kg CO2e/MWh
-EMISSION_FACTORS = {
-    "biomass_mwh": 485.0,
-    "hydropower_mwh": 24.0,
-    "wind_offshore_mwh": 12.0,
-    "wind_onshore_mwh": 11.0,
-    "photovoltaic_mwh": 38.666666666666664,
-    "nuclear_mwh": 12.0,
-    "brown_coal_mwh": 820.0,
-    "hard_coal_mwh": 820.0,
-    "natural_gas_mwh": 490.0,
-    "pumped_storage_mwh": 20.5,
-    "other_conventional_mwh": 655.0,
-    "other_renewables_mwh": 38.0,
-}
 
 
 def get_soc_curve_from_commutes(
@@ -173,21 +158,23 @@ def get_charging_windows(
 
     def to_absolute_emissions(col: pd.Series):
         if col.name not in ["timestamp", "Sum"]:
-            return col * EMISSION_FACTORS[col.name]
+            return col * config.EMISSION_FACTORS[col.name]
         return col
 
     get_time_to_fully_charge = functools.partial(
         get_time_to_charge, car_model=car_model
     )
 
-    df = energy_mix.apply(to_absolute_emissions, axis=0)
-    df = df.merge(right=soc_curve, left_on="timestamp", right_index=True)
+    df = energy_mix.apply(to_absolute_emissions, axis=0)  # pylint: disable=C0103
+    df = df.merge(  # pylint: disable=C0103
+        right=soc_curve, left_on="timestamp", right_index=True
+    )
 
-    df = df[(df["soc"] >= min_soc) & (df["soc"] < max_soc)]
+    df = df[(df["soc"] >= min_soc) & (df["soc"] < max_soc)]  # pylint: disable=C0103
     emission_cols = [col for col in df.columns if col not in ["timestamp", "soc"]]
     df["Sum"] = df[emission_cols].sum(axis=1)
 
-    df = df.assign(
+    df = df.assign(  # pylint: disable=C0103
         finish_time=df.apply(
             lambda row: row["timestamp"]
             + timedelta(hours=get_time_to_fully_charge(current_soc=row["soc"])),

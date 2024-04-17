@@ -28,7 +28,7 @@ def fix_float64(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 
-def convert_df_to_time_series(df: pd.DataFrame):
+def convert_df_to_time_series(df: pd.DataFrame):  # pylint: disable=C0103
     df = df.set_index("timestamp")
     time_series = TimeSeries.from_dataframe(
         df,

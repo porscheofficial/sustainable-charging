@@ -8,6 +8,7 @@ from darts.models.forecasting.forecasting_model import ForecastingModel
 from numpy import average
 from pandas import Timedelta
 from tqdm import tqdm
+from typing import Callable, Any
 
 from model.config import EMISSION_FACTORS
 from model.util import get_covariate_args_for_model
@@ -19,14 +20,14 @@ def cross_validation_without_refit(
     model: ForecastingModel,
     prefix_series: TimeSeries,
     test_series: TimeSeries,
-    metrics: dict[str, callable],
+    metrics: dict[str, Callable],
     data_scaler: Scaler | None,
     covariates: dict[str, TimeSeries],
-    max_n_split: int = None,
+    max_n_split: int = None,  # type: ignore
     forecast_horizon: int = 7 * 24,
     refit=False,
     truncate_refit_train_dataset=None,
-) -> dict[str, float]:
+) -> defaultdict[str, list[Any]]:
     """Perform cross-validation without refitting the model.
 
     Parameters
@@ -46,7 +47,8 @@ def cross_validation_without_refit(
     covariates
         Dictionary of covariates to be used during evaluation.
     forecast_horizon
-        Forecast horizon in hours, i.e. the size of intervals the model will be tested on. Default is 7 * 24.
+        Forecast horizon in hours, i.e. the size of intervals the model will be tested on.
+        Default is 7 * 24.
 
     Returns
     -------
@@ -55,9 +57,10 @@ def cross_validation_without_refit(
     """
 
     assert forecast_horizon > 0, "`forecast_horizon` must be bigger than 0."
-    assert (
-        prefix_series.end_time() + Timedelta(hours=1) == test_series.start_time()
-    ), f"The series must be continuous but prefix ends at {prefix_series.end_time()} and test starts at {test_series.start_time()}."
+    assert prefix_series.end_time() + Timedelta(hours=1) == test_series.start_time(), (
+        f"The series must be continuous but prefix ends at {prefix_series.end_time()} "
+        f"and test starts at {test_series.start_time()}."
+    )
 
     # Get full series
     full_series = prefix_series.concatenate(test_series)
@@ -120,10 +123,10 @@ def cross_validation_without_refit(
         for name, metric in metrics.items():
             metrics_dict[name].append(metric(original, forecast_rescaled))
 
-    for metric, results in metrics_dict.items():
-        metrics_dict[metric] = average(results)
+    for metric, results in metrics_dict.items():  # type: ignore
+        metrics_dict[metric] = average(results)  # type: ignore
 
-    metrics_dict = dict(metrics_dict)
+    metrics_dict = dict(metrics_dict)  # type: ignore
     return metrics_dict
 
 

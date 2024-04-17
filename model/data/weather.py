@@ -15,7 +15,9 @@ def load() -> TimeSeries:
     logger.info("Initiating data loading process...")
     data_wind = pd.read_csv(config.WEATHER_DATA_WIND_PATH, delimiter=",")
     data_solar = pd.read_csv(config.WEATHER_DATA_SOLAR_PATH, delimiter=",")
-    assert data_wind.shape[0] == data_solar.shape[0], "The number of rows in the two weather data files must be equal."
+    assert data_wind.shape[0] == data_solar.shape[0], (
+        "The number of rows in the two weather data " "files must be equal."
+    )
 
     # Rename time column to timestamp
     data_wind = data_wind.rename(columns={"time": "timestamp"})
@@ -33,7 +35,10 @@ def load() -> TimeSeries:
 
     # Avoid any missing values
     missing_values = data.isnull().sum()
-    assert missing_values.sum() == 0, f"There are missing values in the weather data. Missing values: {missing_values}"
+    assert missing_values.sum() == 0, (
+        f"There are missing values in the weather data. "
+        f"Missing values: {missing_values}"
+    )
 
     # Pytorch throws an error on M1/M2 Macbooks with float64
     for column in data.select_dtypes(include=["float64"]).columns:
@@ -41,8 +46,8 @@ def load() -> TimeSeries:
 
     # Log results
     logger.info("Has weather data with")
-    logger.info(f"  shape: {data.shape}")
-    logger.info(f"  columns: {data.columns}")
+    logger.info("  shape: %s", data.shape)
+    logger.info("  columns: %s", data.columns)
 
     # Convert to TimeSeries
     data = util.convert_df_to_time_series(data)

@@ -1,7 +1,8 @@
-from pydantic import field_validator
-from enum import Enum
-from fastapi_camelcase import CamelModel
 import re
+from enum import Enum
+
+from pydantic import field_validator
+from fastapi_camelcase import CamelModel
 
 
 class DayOfWeek(str, Enum):
@@ -20,7 +21,7 @@ class UsageEntry(CamelModel):
     end_time: str | None = None  # Optional field in case of single commutes
 
     @field_validator("start_time", "end_time")
-    def validate_time_format(cls, v):
+    def validate_time_format(self, v):  # pylint: disable=C0103
         if v is None:
             return v  # Return None without validation
 
@@ -58,7 +59,7 @@ class CarModel(CamelModel):
     consumption_per_kilometer: float
 
     @field_validator("charging_curve")
-    def validate_charging_curve(cls, v):
+    def validate_charging_curve(self, v):  # pylint: disable=C0103
         if len(v) != 101:
             raise ValueError(
                 f"The charging curve must have exactly 101 values, {len(v)} given."
