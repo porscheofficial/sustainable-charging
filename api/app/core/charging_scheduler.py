@@ -76,7 +76,13 @@ def get_soc_curve_from_commutes(
 
     current_soc = initial_soc
     last_updated_hour = None
+    last_trip_end = soc_curve.index[0]
     for trip_start, trip_end, soc_change in trips:
+        for i in soc_curve.loc[
+            (soc_curve.index > last_trip_end) & (soc_curve.index <= trip_start)
+        ].index:
+            soc_curve.at[i] = current_soc
+        last_trip_end = trip_end
         mask = (soc_curve.index > trip_start) & (
             soc_curve.index < trip_end + timedelta(hours=1)
         )
@@ -98,6 +104,7 @@ def get_soc_curve_from_commutes(
 def get_time_to_charge(
     car_model: CarModel,
     current_soc: float,
+    max_charging_power: int,
     target_soc: int = 80,
     efficiency: float = 0.9,
 ) -> float:
@@ -125,7 +132,9 @@ def get_time_to_charge(
 
     return (
         sum(
-            2 * one_percent_capacity / (current_rate + next_rate)
+            2
+            * one_percent_capacity
+            / min(current_rate + next_rate, 2 * max_charging_power)
             for (current_rate, next_rate) in charging_rates
         )
         / efficiency
@@ -137,6 +146,7 @@ def get_charging_windows(
     soc_curve: pd.Series,
     energy_mix: pd.DataFrame,
     min_charging_duration: timedelta,
+    max_charging_power: int,
     min_soc: int = 20,
     max_soc: int = 80,
 ) -> list[tuple[datetime, datetime, float]]:
@@ -153,27 +163,33 @@ def get_charging_windows(
 
     Returns:
         A list containing the possible charging windows sorted by cost (asc). Each charging window
-        is a tuple of the form (start, end, cost), where `cost = emissions * charged_soc`.
+        is a tuple of the form (start, end, cost), where `cost` is the gCO2 emitted during charging.
     """
 
-    def to_absolute_emissions(col: pd.Series):
-        if col.name not in ["timestamp", "Sum"]:
-            return col * config.EMISSION_FACTORS[col.name]
+    def to_relative_emissions(col: pd.Series, sum_col: pd.Series):
+        if col.name not in ["timestamp", "Sum", "soc"]:
+            return col / sum_col * config.EMISSION_FACTORS[col.name]
         return col
 
     get_time_to_fully_charge = functools.partial(
-        get_time_to_charge, car_model=car_model
+        get_time_to_charge, car_model=car_model, max_charging_power=max_charging_power
     )
 
-    df = energy_mix.apply(to_absolute_emissions, axis=0)  # pylint: disable=C0103
-    df = df.merge(  # pylint: disable=C0103
-        right=soc_curve, left_on="timestamp", right_index=True
-    )
+    df = energy_mix.merge(right=soc_curve, left_on="timestamp", right_index=True)
 
-    df = df[(df["soc"] >= min_soc) & (df["soc"] < max_soc)]  # pylint: disable=C0103
-    emission_cols = [col for col in df.columns if col not in ["timestamp", "soc"]]
+    df = df[df["soc"] <= max_soc]
+    if not (above_min_soc := df[df["soc"] >= min_soc]).empty:  # pylint: disable=C0103
+        df = above_min_soc
+
+    emission_cols = [
+        col for col in df.columns if col not in ["timestamp", "soc", "Sum"]
+    ]
+
     df["Sum"] = df[emission_cols].sum(axis=1)
-
+    create_relative_emissions = functools.partial(
+        to_relative_emissions, sum_col=df["Sum"]
+    )
+    df = df.apply(create_relative_emissions, axis=0)
     df = df.assign(  # pylint: disable=C0103
         finish_time=df.apply(
             lambda row: row["timestamp"]
@@ -181,17 +197,22 @@ def get_charging_windows(
             axis=1,
         )
     )
+    df["TotalEmissions"] = df[emission_cols].sum(axis=1)
 
     df["charging_emissions"] = df.apply(
         lambda row: df[
             (df["timestamp"] >= row["timestamp"])
             & (df["timestamp"] <= (row["finish_time"]).ceil("H"))
-        ]["Sum"].sum(),
+        ]["TotalEmissions"].mean(),
         axis=1,
     )
 
     df["cost"] = df.apply(
-        lambda row: row["charging_emissions"] * (max_soc - row["soc"]), axis=1
+        lambda row: row["charging_emissions"]
+        * (max_soc - row["soc"])
+        / 100
+        * car_model.battery_capacity,
+        axis=1,
     )
 
     charging_windows = [
