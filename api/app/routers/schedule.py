@@ -22,9 +22,12 @@ async def get_schedule(
     min_charging_duration: int = Query(
         5, description="Minimum charging duration in minutes"
     ),
+    max_charging_power: int = Query(
+        30, description="Maximum charging power (defaults to 30 kW)"
+    ),
 ) -> list[ChargingWindow]:
     """
-    Get schedule for list of commute_ids (as app is not user specific yet)
+    Get schedule for a user_id
     """
 
     user = get_user_by_id(user_id)  # type: ignore
@@ -37,21 +40,21 @@ async def get_schedule(
     ]
 
     # Get the energy mix TODO use @raphaels endpoint to query real energy mix
-    file_path = (
-        pathlib.Path(__file__).parents[1] / "predictions" / "mock_predictions.csv"
-    )
+    file_path = pathlib.Path(__file__).parents[1] / "predictions" / "processed.csv"
     energy_mix = pd.read_csv(file_path, delimiter=";")
     energy_mix["timestamp"] = pd.to_datetime(energy_mix["timestamp"])
 
     # calculate charging windows
     soc_curve = get_soc_curve_from_commutes(
-        commutes, datetime(2024, 1, 28), initial_soc, car
+        commutes, datetime(2024, 2, 19), initial_soc, car
     )
+
     charging_windows = get_charging_windows(
         car_model=car,
         soc_curve=soc_curve,
         energy_mix=energy_mix,
         min_charging_duration=timedelta(minutes=min_charging_duration),
+        max_charging_power=max_charging_power,
     )
 
     return [
