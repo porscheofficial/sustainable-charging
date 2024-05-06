@@ -1,7 +1,12 @@
+import sys
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-from app.routers import commutes, schedule
+
+sys.path.append(os.getcwd())
+from routers import commutes, schedule, user, car_model
 
 app = FastAPI()
 
@@ -16,10 +21,13 @@ app.add_middleware(
 
 app.include_router(commutes.router)
 app.include_router(schedule.router)
+app.include_router(user.router)
+app.include_router(car_model.router)
 
 
 @app.get("/")
 async def main():
+    """Render a welcome message."""
     return "Welcome to the Chargify API"
 
 

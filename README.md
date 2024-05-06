@@ -4,84 +4,117 @@
 
 This repository holds the code for Chargify, focused on machine learning based EV charge scheduling. This project started in the AI in Practice course together with Porsche Digital.
 
-## Contribution Guidelines
+## Structure
 
-To streamline our collaboration and maintain the quality of our codebase, we follow a structured workflow using Git branches and pull requests. Here's how you can contribute:
+| Module Name            | Folder        | Description |
+| ---------------------- | ------------- | ----------- |
+| Model related          | model         |             |
+| Model results          | model_results |             |
+| Frontend               | frontend      |             |
+| API                    | api           |             |
+| Experimental Notebooks | experiments   |             |
+| Experimental Data      | data          |             |
 
-### Getting Started
+## Setup
 
-- **Familiarize Yourself with the Repository:** Spend some time understanding the current codebase and documentation.
-- **Setup Your Local Environment:** Follow the instructions in the Setup section to prepare your local environment.
+### Model
 
-### Workflow
+Follow these instructions to set up your Python environment to contribute to or run the code in this repository.
+It's recommended to use [`mamba`](https://github.com/mamba-org/mamba) to manage dependencies. `mamba` is a drop-in replacement for `conda` re-written in C++ to speed things up significantly (you can stick with `conda` though).
 
-We use three types of branches:
+<details><summary>Installing <code>mamba</code></summary>
 
-- `main`: Stable version of the project. All changes eventually merge here.
-- `dev`: Development branch for integrating various features before moving to main.
-- `feature/<issue_number>-branch-description`: For working on new features or fixing issues.
+<p>
 
-#### 1. Creating a Branch
-
-- Always create a new branch for your work, branching off from dev.
-- Name your branch meaningfully, like `feature/111-add-nlp-model` or `fix/222-data-loading-issue`.
-
-```bash
-git checkout dev
-git pull origin dev
-git checkout -b [your_branch_name]
-```
-
-#### 2. Make Changes
-
-- Work on your feature or fix in your branch.
-- Commit your changes with clear, descriptive commit messages.
-
-#### 3. Keep Your Branch Updated
-
-- Regularly merge changes from dev into your branch to stay up-to-date.
+On Unix-like platforms, run the snippet below. Otherwise, visit the [mambaforge repo](https://github.com/conda-forge/miniforge#mambaforge). Note this does not use the Anaconda installer, which reduces bloat.
 
 ```bash
-git pull origin dev
+curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+bash Miniforge3-$(uname)-$(uname -m).sh
 ```
 
-#### 4. Submitting Changes
+</details>
 
-Once you are ready to share your work, push your branch to the remote repository.
+#### Environment
+
+After having installed `mamba`, you can create a `mamba` environment from the `environment.yml` with all necessary dependencies installed like this:
 
 ```bash
-git push origin [your_branch_name]
+mamba env create -f environment.yml
 ```
 
-#### 5. Create a Pull Request (PR)
+You can then activate your environment with
 
-- Open a PR from your branch to dev on GitHub.
-- Clearly describe the changes and link any relevant issues.
+```bash
+mamba activate aip-porsche
+```
 
-#### 6. Code Review
+#### Updating the Environment
 
-- Request a review from one or two team members.
-- Address any feedback and make necessary revisions.
+Working together with many people in a shared environment requires caution.
+If you want to add a dependency to the `environment.yml`, install the dependency locally and test that there are no conflicts with the existing environment.
+Then open a pull request with an updated `environment.yml` to ensure that all collaborators can reproduce the environment.
 
-#### 7. Merge into dev
+### Database
+We use a local MongoDB as database.
 
-- After approval, merge your PR into dev.
-- Delete your branch after merging, if it's no longer needed.
+```bash
+docker run --name chargify -d -p 27017:27017 mongo
+```
 
-#### (8.) Staging to main
+### Backend API
 
-- Periodically, we will merge dev into main to update the stable version.
-- This will be a collective decision after thorough testing and review.
+It is recommended to run the backend in a virtual environment.
 
-### Requirements for merging
+In the project root, run
 
-- Test your code thoroughly before submitting a PR.
-- Document your code and update the README if necessary.
-- Communicate with the team about what you're working on to avoid overlap.
+```bash
+python -m venv .venv && source .venv/bin/activate
+```
+
+Then install the requirements
+
+```bash
+pip install -r api/requirements.txt
+```
+
+To start the backend API, move into the api directory (`cd api`) and run
+
+```bash
+python -m uvicorn app.main:app --host=0.0.0.0
+```
+
+### Frontend
+
+Move into the frontend folder
+
+```bash
+cd frontend
+```
+
+Install the required packages
+
+```bash
+npm install
+```
+
+Start the local frontend
+
+```bash
+npm start
+```
+
+## Contributing
+
+Chargify is openly developed in the wild and contributions (both internal and external) are highly appreciated.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) on how to get started.
+
+If you have feedback or want to propose a new feature, please [open an issue](https://github.com/porscheofficial/speed-estimation-traffic-monitoring/issues).
+Thank you! 😊
 
 ## Acknowledgements
 
-This project is a joint initiative of [Porsche Digital](https://www.porsche.digital/) and the [Hasso Plattner Institute](https://hpi.de) (Seminar: [AI in Practice](https://hpi.de/entrepreneurship/ai-in-practice.html)). ✨
+This project is a joint initiative of [Porsche AG](https://www.porsche.com), [Porsche Digital](https://www.porsche.digital/) and the [Hasso Plattner Institute](https://hpi.de) (Seminar: [AI in Practice](https://hpi.de/entrepreneurship/ai-in-practice.html)). ✨
 
 
 ## License

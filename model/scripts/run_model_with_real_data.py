@@ -14,6 +14,7 @@ from model.util import convert_df_to_time_series
 
 from model.data import load
 
+
 def main():
     assert not torch.cuda.is_available(), "We want to run this on CPU only."
 
@@ -21,7 +22,9 @@ def main():
     m = InferenceHelper("model_results/lstm")
 
     # Get data requirements for model inference
-    data_req = m.get_data_request_info(7 * 24)  # Data requirements for 7d ahead prediction
+    data_req = m.get_data_request_info(
+        7 * 24
+    )  # Data requirements for 7d ahead prediction
 
     # Get data
     smard_data, weather_data = fetch(data_req)

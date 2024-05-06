@@ -1,34 +1,30 @@
 from fastapi import APIRouter
-from app.firestore import db
-from app.schemas import CommuteEntity
+from schemas import CommuteEntity
+from mongodb import MongoDBClient
 
 router = APIRouter(prefix="/commutes", tags=["commutes"])
+db = MongoDBClient()
 
 
 @router.get("/", response_model=list[CommuteEntity])
 async def get_commutes(user_id: str) -> list[CommuteEntity]:
-    """
-    Get all the commutes filtered by a specific user.
-    """
+    """Get all the commutes filtered by a specific user."""
 
     # Get all the commutes
-    commutes = db.collection("commutes").where("user_id", "==", user_id).stream()
+    result = db.find_commutes_by_user_id(user_id=user_id)
 
     # Return the commutes
-    return [CommuteEntity(**commute.to_dict()) for commute in commutes]
+    return [CommuteEntity(**commute) for commute in result]
 
 
 @router.post("/")
 async def add_commute(commute: CommuteEntity):
-    """
-    Add a new commute to the database.
-    """
+    """Add a new commute to the database."""
+    try:
+        print(commute.to_dict())
+        commute_id = db.insert_commute(commute.to_dict())
 
-    # Create a new document reference with an auto-generated ID
-    doc_ref = db.collection("commutes").document()
-
-    # Save the commute data
-    doc_ref.set(commute.model_dump())
-
-    # Return the ID of the newly created document
-    return {"id": doc_ref.id, "message": "Commute added successfully!"}
+        return {"id": str(commute_id), "message": "Commute added successfully!"}
+    except Exception as e:  # pylint: disable=W0718
+        print(e)
+        return e

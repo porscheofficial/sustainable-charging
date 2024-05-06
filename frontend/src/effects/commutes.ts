@@ -1,6 +1,9 @@
 import { CommuteType } from "../models/CommuteType";
 
 export async function addCommute(values: CommuteType) {
+  console.log("Sending request with body:", values);
+  console.log("Sending request with body:", JSON.stringify(values));
+
   const response = await fetch(`${process.env.REACT_APP_BASE_URL}/commutes`, {
     method: "POST",
     body: JSON.stringify(values),

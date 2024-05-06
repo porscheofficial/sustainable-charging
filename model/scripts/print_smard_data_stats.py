@@ -10,7 +10,9 @@ def main():
     # Load
     train, val, test = load_smard_data()
     full = convert_df_to_time_series(
-        pd.concat([train.pd_dataframe(), val.pd_dataframe(), test.pd_dataframe()]).reset_index()
+        pd.concat(
+            [train.pd_dataframe(), val.pd_dataframe(), test.pd_dataframe()]
+        ).reset_index()
     )
 
     for split, data in zip(["train", "val", "test", "full"], [train, val, test, full]):

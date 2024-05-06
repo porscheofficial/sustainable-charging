@@ -1,4 +1,5 @@
 import logging
+from typing import Callable, Any
 from collections import defaultdict
 
 import numpy as np
@@ -8,7 +9,6 @@ from darts.models.forecasting.forecasting_model import ForecastingModel
 from numpy import average
 from pandas import Timedelta
 from tqdm import tqdm
-from typing import Callable, Any
 
 from model.config import EMISSION_FACTORS
 from model.util import get_covariate_args_for_model
