@@ -2,7 +2,7 @@ from datetime import datetime, time, timedelta
 from math import floor
 import functools
 import pandas as pd
-from app.schemas import CommuteEntity, CarModel
+from schemas import CommuteEntity, CarModel
 from model import config
 
 WEEK_DAYS = {"MON": 0, "TUE": 1, "WED": 2, "THU": 3, "FRI": 4, "SAT": 5, "SUN": 6}

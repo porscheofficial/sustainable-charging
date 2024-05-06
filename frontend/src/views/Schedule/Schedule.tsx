@@ -1,13 +1,30 @@
 import { Text, Container, Box, Input } from "@chakra-ui/react";
-import { mockSchedule } from "./mockData";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ScheduleHeader from "../../components/Schedule/ScheduleHeader";
 import TimelineView from "../../components/Schedule/TimelineView";
+import { getSchedule } from "../../effects/schedule";
+import { ChargingWindow } from "../../models/ScheduleType";
 
 export default function Schedule() {
-  // todo: make request to get schedule for user
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [schedule, setSchedule] = useState<ChargingWindow[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string>("");
+
+  useEffect(() => {
+    const fetchSchedule = async () => {
+      const response = await getSchedule(currentUserId);
+
+      const converted: ChargingWindow[] = response.map((item: any) => ({
+        startTime: new Date(item.startTime),
+        endTime: new Date(item.endTime),
+        emissions: item.emissions
+        }));
+
+      setSchedule(converted);
+    };
+    fetchSchedule();
+
+    // todo: use debouncing instead of this approach for typing
+  }, [currentUserId]);
 
   return (
     <>
@@ -24,8 +41,7 @@ export default function Schedule() {
             onChange={(e) => setCurrentUserId(e.target.value)}
           />
         </Box>
-
-        <TimelineView schedule={mockSchedule} />
+        {schedule.length !== 0 && <TimelineView schedule={schedule} />}
       </Container>
     </>
   );

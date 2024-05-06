@@ -21,7 +21,7 @@ export default function UsageArrayField() {
               <Field name={`${name}.day`} component="select">
                 {({ input }) => (
                   <Select {...input}>
-                    <option disabled>Select day</option>
+                    <option>Select day</option>
                     <option value="MON">Monday</option>
                     <option value="TUE">Tuesday</option>
                     <option value="WED">Wednesday</option>

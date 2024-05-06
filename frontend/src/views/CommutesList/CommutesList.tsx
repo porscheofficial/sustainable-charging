@@ -29,7 +29,7 @@ export default function CommutesList() {
       const response = await getCommutes(currentUserId);
       setCommutes(response);
     };
-    if (isValidEmail(currentUserId)) {
+    if (currentUserId !== '') {
       fetchCommutes();
     }
     // todo: use debouncing instead of this approach for typing

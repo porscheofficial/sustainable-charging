@@ -2,12 +2,12 @@ import { VStack, Text, Box } from "@chakra-ui/react";
 import { findGaps } from "../utils";
 import AvailableChargingWindow from "../AvailableChargingWindow";
 import GapWindow from "../GapWindow";
-import { Schedule, ChargingWindow } from "../../../models/ScheduleType";
+import { ChargingWindow } from "../../../models/ScheduleType";
 
-export default function TimelineView({ schedule }: { schedule: Schedule }) {
+export default function TimelineView({ schedule }: { schedule: ChargingWindow[] }) {
   // Merge and sort windows and gaps
   const mergedTimeline = [
-    ...schedule.availableChargingWindows,
+    ...schedule,
     ...findGaps(schedule),
   ].sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
 

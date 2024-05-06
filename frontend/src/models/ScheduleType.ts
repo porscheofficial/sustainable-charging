@@ -3,7 +3,3 @@ export interface ChargingWindow {
   endTime: Date;
   emissions: number | null;
 }
-
-export interface Schedule {
-  availableChargingWindows: ChargingWindow[];
-}

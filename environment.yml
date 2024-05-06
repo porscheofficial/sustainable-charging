@@ -43,6 +43,8 @@ dependencies:
   - black
   - ruff
   - pytest
+  - fastapi
+  - pymongo
 
   # pip dependencies
   - pip
@@ -52,6 +54,7 @@ dependencies:
       - print-on-steroids[exceptions]
       - meteostat
       - safety
+      - fastapi-camelcase
 
 # Non-standard section listing target platforms for conda-lock:
 platforms:

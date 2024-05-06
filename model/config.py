@@ -9,13 +9,24 @@ SOLAR_IDS = [10513, 10382, 10637, 10147, 10469, 10852, 10763, 10738, 10338]
 WIND_IDS = [10224, 10291, 10113, 10035, 10264, 10430]
 
 # Path to the relevant data
-RAW_DATA_PATH = "."
+# RAW_DATA_PATH = "."
+# RAW_DATA_PATH = os.path.join(os.getcwd(), os.pardir)
+RAW_DATA_PATH = (
+    "C:\\Users\\Tiger\\Desktop\\Master\\Semester_1\\AIP\\hpi-porsche-challenge"
+)
+# SMARD_DATA_PATHS = [
+#     os.path.join(RAW_DATA_PATH, "data", "raw", "2015_2016.csv"),
+#     os.path.join(RAW_DATA_PATH, "data", "raw", "2017_2018.csv"),
+#     os.path.join(RAW_DATA_PATH, "data", "raw", "2019_2020.csv"),
+#     os.path.join(RAW_DATA_PATH, "data", "raw", "2021_2022.csv"),
+#     os.path.join(RAW_DATA_PATH, "data", "raw", "2022_2023.csv"),
+# ]
 SMARD_DATA_PATHS = [
-    os.path.join(RAW_DATA_PATH, "data/raw/2015_2016.csv"),
-    os.path.join(RAW_DATA_PATH, "data/raw/2017_2018.csv"),
-    os.path.join(RAW_DATA_PATH, "data/raw/2019_2020.csv"),
-    os.path.join(RAW_DATA_PATH, "data/raw/2021_2022.csv"),
-    os.path.join(RAW_DATA_PATH, "data/raw/2022_2023.csv"),
+    os.path.abspath("C:\\Your\\Path\\hpi-porsche-challenge\\data\\raw\\2015_2016.csv"),
+    os.path.abspath("C:\\Your\\Path\\hpi-porsche-challenge\\data\\raw\\2017_2018.csv"),
+    os.path.abspath("C:\\Your\\Path\\hpi-porsche-challenge\\data\\raw\\2019_2020.csv"),
+    os.path.abspath("C:\\Your\\Path\\hpi-porsche-challenge\\data\\raw\\2021_2022.csv"),
+    os.path.abspath("C:\\Your\\Path\\hpi-porsche-challenge\\data\\raw\\2022_2023.csv"),
 ]
 WEATHER_DATA_SOLAR_PATH = os.path.join(
     RAW_DATA_PATH, "data/raw/weather_data_solar_stations.csv"

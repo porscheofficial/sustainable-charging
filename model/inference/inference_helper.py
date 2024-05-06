@@ -1,15 +1,11 @@
-import argparse
 from dataclasses import dataclass
+import os
 
 import joblib
-import optuna
 from darts import TimeSeries
 from darts.dataprocessing.transformers import Scaler
-from darts.metrics import rmse
-from darts.models import RNNModel, XGBModel
-from darts.models.forecasting.forecasting_model import ForecastingModel
+from darts.models import RNNModel
 
-from model import config, data, evaluation, feature_engineering
 from model.feature_engineering import get_covariates_time
 from model.util import get_covariate_args_for_model
 
@@ -37,8 +33,10 @@ class InferenceHelper:
             input_chunk_length=212,
             n_epochs=5,
         )
-        self.model = self.model.load(self.model_dir + "/model")
+
+        self.model = self.model.load(os.path.join(self.model_dir, "model"))
         # self.model.load_from_checkpoint(self.model_dir) + "/model.ckpt"
+
         self.scaler = Scaler()
         self.scaler = joblib.load(self.model_dir + "/scaler_smard")
 

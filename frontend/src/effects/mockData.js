@@ -1,5 +1,4 @@
-export const mockSchedule = {
-  availableChargingWindows: [
+export const mockSchedule = [
     {
       startTime: new Date("2024-02-02T08:00:00"),
       endTime: new Date("2024-02-02T12:00:00"),
@@ -20,5 +19,4 @@ export const mockSchedule = {
       endTime: new Date("2024-02-04T18:00:00"),
       emissions: 33,
     },
-  ],
-};
+];
