@@ -3,6 +3,7 @@
 ![License: MIT](https://img.shields.io/github/license/konstantinjdobler/nlp-research-template?color=green)
 
 This repository holds the code for Chargify, focused on machine learning based EV charge scheduling. This project started in the AI in Practice course together with Porsche Digital.
+The energy mix prediction model was trained in January 2024.
 
 ## Structure
 
@@ -37,7 +38,7 @@ bash Miniforge3-$(uname)-$(uname -m).sh
 
 #### Environment
 
-After having installed `mamba`, you can create a `mamba` environment from the `environment.yml` with all necessary dependencies installed like this:
+After having installed `mamba`, you can create a `mamba` environment from the `environment.yml` with all necessary dependencies installed. Alternatively, you can use conda (the commands stay the same only replace mamba with conda). 
 
 ```bash
 mamba env create -f environment.yml
@@ -60,6 +61,11 @@ We use a local MongoDB as database.
 
 ```bash
 docker run --name chargify -d -p 27017:27017 mongo
+```
+
+Optional: Import a sample dataset to mongodb:
+```bash
+docker exec -i chargify /usr/bin/mongorestore --uri "mongodb://localhost:27017" --archive < api/mongodb.dump
 ```
 
 ### Backend API

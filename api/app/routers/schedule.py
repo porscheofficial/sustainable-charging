@@ -69,7 +69,14 @@ async def get_schedule(
     energy_mix = energy_mix.reset_index()
 
     # calculate charging windows
-    soc_curve = get_soc_curve_from_commutes(commutes, datetime.now(), initial_soc, car)
+    soc_curve = get_soc_curve_from_commutes(
+        commutes,
+        datetime(
+            datetime.now().year, datetime.now().month, datetime.now().day, 0, 0, 0
+        ),
+        initial_soc,
+        car,
+    )
     charging_windows = get_charging_windows(
         car_model=car,
         soc_curve=soc_curve,
