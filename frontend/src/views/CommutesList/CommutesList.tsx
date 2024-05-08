@@ -15,10 +15,7 @@ import { CommuteType } from "../../models/CommuteType";
 import { useEffect, useState } from "react";
 import { getCommutes } from "../../effects/commutes";
 
-// todo: refactor into more components, utils, and hooks
 
-const isValidEmail = (email: string): boolean =>
-  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
 
 export default function CommutesList() {
   const [commutes, setCommutes] = useState<CommuteType[]>([]);
@@ -49,7 +46,7 @@ export default function CommutesList() {
         />
       </Box>
       <TableContainer className="py-4">
-        <Table size="md">
+        <Table size="md" key="commutes">
           <Thead>
             <Tr>
               <Th>Name</Th>
@@ -63,7 +60,7 @@ export default function CommutesList() {
 
           <Tbody>
             {commutes?.map((commute) => (
-              <RowItem commute={commute} />
+              <RowItem commute={commute} key={commute.name}/>
             ))}
           </Tbody>
         </Table>
