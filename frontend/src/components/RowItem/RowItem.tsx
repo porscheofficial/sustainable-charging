@@ -38,7 +38,7 @@ export default function RowItem({ commute }: RowItemProps) {
       <Td>{commute.approxDurationMinutes} Minutes</Td>
       <Td>
         {commute.usage.map((u) => (
-          <Tag marginRight={2}>
+          <Tag marginRight={2} key="add_usage">
             {u.day} from {u.startTime} to {u.endTime}
           </Tag>
         ))}

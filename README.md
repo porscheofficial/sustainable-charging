@@ -3,58 +3,19 @@
 ![License: MIT](https://img.shields.io/github/license/konstantinjdobler/nlp-research-template?color=green)
 
 This repository holds the code for Chargify, focused on machine learning based EV charge scheduling. This project started in the AI in Practice course together with Porsche Digital.
-The energy mix prediction model was trained in January 2024.
 
 ## Structure
 
-| Module Name            | Folder        | Description |
-| ---------------------- | ------------- | ----------- |
-| Model related          | model         |             |
-| Model results          | model_results |             |
-| Frontend               | frontend      |             |
-| API                    | api           |             |
-| Experimental Notebooks | experiments   |             |
-| Experimental Data      | data          |             |
+| Module Name            | Folder        | Description                                        |
+| ---------------------- | ------------- |----------------------------------------------------|
+| Model related          | model         | Code related to training the different models.     |
+| Model results          | model_results | The weights and checkpoints of the trained models. |
+| Frontend               | frontend      | Code for the frontend.                             |
+| API                    | api           | The backend API code.                              |
+| Experimental Notebooks | experiments   | Experiments we did during development.             |
+| Experimental Data      | data          | Experimental data we used during development.      |
 
 ## Setup
-
-### Model
-
-Follow these instructions to set up your Python environment to contribute to or run the code in this repository.
-It's recommended to use [`mamba`](https://github.com/mamba-org/mamba) to manage dependencies. `mamba` is a drop-in replacement for `conda` re-written in C++ to speed things up significantly (you can stick with `conda` though).
-
-<details><summary>Installing <code>mamba</code></summary>
-
-<p>
-
-On Unix-like platforms, run the snippet below. Otherwise, visit the [mambaforge repo](https://github.com/conda-forge/miniforge#mambaforge). Note this does not use the Anaconda installer, which reduces bloat.
-
-```bash
-curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
-bash Miniforge3-$(uname)-$(uname -m).sh
-```
-
-</details>
-
-#### Environment
-
-After having installed `mamba`, you can create a `mamba` environment from the `environment.yml` with all necessary dependencies installed. Alternatively, you can use conda (the commands stay the same only replace mamba with conda). 
-
-```bash
-mamba env create -f environment.yml
-```
-
-You can then activate your environment with
-
-```bash
-mamba activate aip-porsche
-```
-
-#### Updating the Environment
-
-Working together with many people in a shared environment requires caution.
-If you want to add a dependency to the `environment.yml`, install the dependency locally and test that there are no conflicts with the existing environment.
-Then open a pull request with an updated `environment.yml` to ensure that all collaborators can reproduce the environment.
 
 ### Database
 We use a local MongoDB as database.
@@ -67,6 +28,7 @@ Optional: Import a sample dataset to mongodb:
 ```bash
 docker exec -i chargify /usr/bin/mongorestore --uri "mongodb://localhost:27017" --archive < api/mongodb.dump
 ```
+With this import the database is set up to hold a test user called **chargify**, which can be used in the frontend.
 
 ### Backend API
 
@@ -109,6 +71,48 @@ Start the local frontend
 ```bash
 npm start
 ```
+
+### Model
+This repository provides an already trained model to predict the future energy mix in the grid seven days in advance.
+The default model used can be found in ```model_results/lstm```, which was trained in January 2024.
+If you want to retrain the model, go through the following steps.
+
+Follow these instructions to set up your Python environment to contribute to or run the code in this repository.
+It's recommended to use [`mamba`](https://github.com/mamba-org/mamba) to manage dependencies. `mamba` is a drop-in replacement for `conda` re-written in C++ to speed things up significantly (you can stick with `conda` though).
+
+<details><summary>Installing <code>mamba</code></summary>
+
+<p>
+
+On Unix-like platforms, run the snippet below. Otherwise, visit the [mambaforge repo](https://github.com/conda-forge/miniforge#mambaforge). Note this does not use the Anaconda installer, which reduces bloat.
+
+```bash
+curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
+bash Miniforge3-$(uname)-$(uname -m).sh
+```
+
+</details>
+
+#### Environment
+
+After having installed `mamba`, you can create a `mamba` environment from the `environment.yml` with all necessary dependencies installed. Alternatively, you can use conda (the commands stay the same only replace mamba with conda). 
+
+```bash
+mamba env create -f environment.yml
+```
+
+You can then activate your environment with
+
+```bash
+mamba activate aip-porsche
+```
+
+#### Updating the Environment
+
+Working together with many people in a shared environment requires caution.
+If you want to add a dependency to the `environment.yml`, install the dependency locally and test that there are no conflicts with the existing environment.
+Then open a pull request with an updated `environment.yml` to ensure that all collaborators can reproduce the environment.
+
 
 ## Contributing
 

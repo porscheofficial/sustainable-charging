@@ -29,9 +29,9 @@ export default function TimelineView({ schedule }: { schedule: ChargingWindow[] 
           <VStack spacing={4}>
             {items.map((item, index) =>
               item.emissions ? (
-                <AvailableChargingWindow index={index} window={item} />
+                <AvailableChargingWindow index={index} window={item} key={index}/>
               ) : (
-                <GapWindow index={index} window={item} />
+                <GapWindow index={index} window={item} key={index + "_gap"}/>
               )
             )}
           </VStack>

@@ -1,8 +1,8 @@
 import { ChargingWindow } from "../../models/ScheduleType";
 
 export const findGaps = (schedule: ChargingWindow[]): ChargingWindow[] => {
-  let gaps: ChargingWindow[] = [];
-  let windows = schedule;
+  const gaps: ChargingWindow[] = [];
+  const windows = schedule;
 
   // Sort windows by start time
   windows.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());

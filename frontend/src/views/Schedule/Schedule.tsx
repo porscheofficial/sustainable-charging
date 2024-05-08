@@ -13,7 +13,7 @@ export default function Schedule() {
     const fetchSchedule = async () => {
       const response = await getSchedule(currentUserId);
 
-      const converted: ChargingWindow[] = response.map((item: any) => ({
+      const converted: ChargingWindow[] = response.map((item: ChargingWindow) => ({
         startTime: new Date(item.startTime),
         endTime: new Date(item.endTime),
         emissions: item.emissions
