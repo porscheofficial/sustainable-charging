@@ -1,64 +1,150 @@
 name: aip-porsche
 channels:
   - conda-forge
-  - nvidia # nvidia channel for cuda packages
-  # We want to have a reproducible setup, so we don't want default channels,
-  # which may be different for different users. All required channels should
-  # be listed explicitly here.
-  - nodefaults
 dependencies:
-  - python=3.10 # or don't specify the version and use latest stable
-
-  # ML libraries
-  - pytorch::pytorch>=2.0 # or don't specify the version and use latest stable
-  # CUDA only on linux and windows
-  # - pytorch::pytorch-cuda=11.8 # [linux]
-  # - pytorch::pytorch-cuda=11.8 # [win]
-  - wandb
-  - lightning
-  - transformers
-  - datasets
-  - evaluate
-  - accelerate
-  - u8darts # For time-series forecasting
-  - optuna
-
-  # Good to have
-  - numpy
-  - scipy
-  - pandas
-  - seqeval
-  - scikit-learn
-  - matplotlib
-
-  # Misc
-  - jsonlines
-  - zstandard
-  - debugpy
-  - tqdm
-  - jupyterlab
-  - colorama
-
-  # Dev dependencies
-  - black
-  - ruff
-  - pytest
-  - fastapi
-  - pymongo
-
-  # pip dependencies
-  - pip
+  - asttokens=2.4.1
+  - bzip2=1.0.8
+  - ca-certificates=2024.2.2
+  - decorator=5.1.1
+  - exceptiongroup=1.2.0
+  - executing=2.0.1
+  - ipython=8.24.0
+  - jedi=0.19.1
+  - libffi=3.4.2
+  - libsqlite=3.45.3
+  - libzlib=1.2.13
+  - matplotlib-inline=0.1.7
+  - ncurses=6.5
+  - openssl=3.3.0
+  - parso=0.8.4
+  - pexpect=4.9.0
+  - pickleshare=0.7.5
+  - pip=24.0
+  - prompt-toolkit=3.0.42
+  - ptyprocess=0.7.0
+  - pure_eval=0.2.2
+  - pygments=2.18.0
+  - python=3.10.14
+  - readline=8.2
+  - setuptools=69.5.1
+  - six=1.16.0
+  - stack_data=0.6.2
+  - tk=8.6.13
+  - traitlets=5.14.3
+  - typing_extensions=4.11.0
+  - wcwidth=0.2.13
+  - wheel=0.43.0
+  - xz=5.2.6
   - pip:
-      - pipx
-      - simple_parsing
-      - print-on-steroids[exceptions]
-      - meteostat
-      - safety
-      - fastapi-camelcase
-
-# Non-standard section listing target platforms for conda-lock:
-platforms:
-  - linux-64
-  - osx-arm64 # This is for M1/M2 MacBooks # Currently bugged, wait for mamba 1.5.3 release
-  # - linux-aarch64 # This is linux-arm64. We can build Docker images for M1/M2 Macs on top of this - won't support MPS though
-  - win-64
+      - adagio==0.2.4
+      - aiohttp==3.9.5
+      - aiosignal==1.3.1
+      - annotated-types==0.6.0
+      - anyio==4.3.0
+      - appdirs==1.4.4
+      - async-timeout==4.0.3
+      - attrs==23.2.0
+      - cachecontrol==0.14.0
+      - cachetools==5.3.3
+      - certifi==2024.2.2
+      - cffi==1.16.0
+      - charset-normalizer==3.3.2
+      - click==8.1.7
+      - cloudpickle==3.0.0
+      - colorama==0.4.6
+      - contourpy==1.2.1
+      - coreforecast==0.0.9
+      - cryptography==42.0.7
+      - cycler==0.12.1
+      - cython==3.0.10
+      - darts==0.29.0
+      - dnspython==2.6.1
+      - fastapi==0.109.0
+      - fastapi-camelcase==2.0.0
+      - filelock==3.14.0
+      - firebase-admin==6.3.0
+      - fonttools==4.51.0
+      - frozenlist==1.4.1
+      - fs==2.4.16
+      - fsspec==2024.3.1
+      - fugue==0.9.0
+      - google-api-core==2.19.0
+      - google-api-python-client==2.129.0
+      - google-auth==2.29.0
+      - google-auth-httplib2==0.2.0
+      - google-cloud-core==2.4.1
+      - google-cloud-firestore==2.16.0
+      - google-cloud-storage==2.16.0
+      - google-crc32c==1.5.0
+      - google-resumable-media==2.7.0
+      - googleapis-common-protos==1.63.0
+      - grpcio==1.63.0
+      - grpcio-status==1.62.2
+      - h11==0.14.0
+      - holidays==0.48
+      - httplib2==0.22.0
+      - idna==3.7
+      - jinja2==3.1.4
+      - joblib==1.4.2
+      - kiwisolver==1.4.5
+      - lightning-utilities==0.11.2
+      - llvmlite==0.42.0
+      - markupsafe==2.1.5
+      - matplotlib==3.8.4
+      - meteostat==1.6.7
+      - mpmath==1.3.0
+      - msgpack==1.0.8
+      - multidict==6.0.5
+      - networkx==3.3
+      - nfoursid==1.0.1
+      - numba==0.59.1
+      - numpy==1.26.4
+      - packaging==24.0
+      - pandas==2.2.1
+      - patsy==0.5.6
+      - pillow==10.3.0
+      - pmdarima==2.0.4
+      - pretty-errors==1.2.25
+      - proto-plus==1.23.0
+      - protobuf==4.25.3
+      - pyarrow==16.1.0
+      - pyasn1==0.6.0
+      - pyasn1-modules==0.4.0
+      - pycparser==2.22
+      - pydantic==2.5.3
+      - pydantic-core==2.14.6
+      - pyhumps==3.8.0
+      - pyjwt==2.8.0
+      - pymongo==4.7.2
+      - pyod==1.1.3
+      - pyparsing==3.1.2
+      - python-dateutil==2.9.0.post0
+      - pytorch-lightning==2.2.4
+      - pytz==2024.1
+      - pyyaml==6.0.1
+      - requests==2.31.0
+      - rsa==4.9
+      - scikit-learn==1.4.2
+      - scipy==1.13.0
+      - shap==0.45.1
+      - slicer==0.0.8
+      - sniffio==1.3.1
+      - starlette==0.35.1
+      - statsforecast==1.7.4
+      - statsmodels==0.14.2
+      - sympy==1.12
+      - tbats==1.1.3
+      - tensorboardx==2.6.2.2
+      - threadpoolctl==3.5.0
+      - torch==2.3.0
+      - torchmetrics==1.4.0
+      - tqdm==4.66.4
+      - triad==0.9.6
+      - tzdata==2024.1
+      - uritemplate==4.1.1
+      - urllib3==2.2.1
+      - utilsforecast==0.1.9
+      - uvicorn==0.25.0
+      - xarray==2024.5.0
+      - xgboost==2.0.3
+      - yarl==1.9.4

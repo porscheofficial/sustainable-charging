@@ -1,9 +1,0 @@
-fastapi==0.109.0
-pydantic==2.5.3
-uvicorn==0.25.0
-firebase-admin==6.3.0
-fastapi-camelcase==2.0.0
-pandas==2.2.1
-joblib
-darts
-meteostat

@@ -24,7 +24,7 @@ We use a local MongoDB as database.
 docker run --name chargify -d -p 27017:27017 mongo
 ```
 
-Optional: Import a sample dataset to mongodb:
+Import a sample dataset to mongodb:
 ```bash
 docker exec -i chargify /usr/bin/mongorestore --uri "mongodb://localhost:27017" --archive < api/mongodb.dump
 ```
@@ -34,25 +34,31 @@ With this import the database is set up to hold a test user called **chargify**,
 
 It is recommended to run the backend in a virtual environment.
 
-In the project root, run
+In the project root, run to create the conda environment and install all required packages.
 
 ```bash
-python -m venv .venv && source .venv/bin/activate
+conda env create -f environment.yml && conda activate chargify
 ```
 
-Then install the requirements
+To start the backend API, move into the api directory (`cd api/app`) and run
 
 ```bash
-pip install -r api/requirements.txt
+python -m uvicorn main:app --host=0.0.0.0
 ```
 
-To start the backend API, move into the api directory (`cd api`) and run
+As soon as the backend is running you can add your own user. Therefore, visit http://localhost:8000/docs and scroll down to the endpoint **POST /user**.
+Past the following body into the request body field (replace the name with your desired username) and execute the request.
 
-```bash
-python -m uvicorn app.main:app --host=0.0.0.0
+```json
+{
+  "name": "your-user-name",
+  "carModelId": "porsche-taycan-4s-performance-battery-plus"
+}
 ```
 
 ### Frontend
+
+**NOTE: The frontend supports Firefox and Chrome. Using Safari might lead to problems.**
 
 Move into the frontend folder
 
@@ -77,7 +83,6 @@ This repository provides an already trained model to predict the future energy m
 The default model used can be found in ```model_results/lstm```, which was trained in January 2024.
 If you want to retrain the model, go through the following steps.
 
-Follow these instructions to set up your Python environment to contribute to or run the code in this repository.
 It's recommended to use [`mamba`](https://github.com/mamba-org/mamba) to manage dependencies. `mamba` is a drop-in replacement for `conda` re-written in C++ to speed things up significantly (you can stick with `conda` though).
 
 <details><summary>Installing <code>mamba</code></summary>
@@ -95,16 +100,16 @@ bash Miniforge3-$(uname)-$(uname -m).sh
 
 #### Environment
 
-After having installed `mamba`, you can create a `mamba` environment from the `environment.yml` with all necessary dependencies installed. Alternatively, you can use conda (the commands stay the same only replace mamba with conda). 
+After having installed `mamba`, you can create a `mamba` environment from the `environment_model.yml` with all necessary dependencies installed. Alternatively, you can use conda (the commands stay the same only replace mamba with conda). 
 
 ```bash
-mamba env create -f environment.yml
+mamba env create -f environment_model.yml
 ```
 
 You can then activate your environment with
 
 ```bash
-mamba activate aip-porsche
+mamba activate chargify-model
 ```
 
 #### Updating the Environment
