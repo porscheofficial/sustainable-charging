@@ -40,9 +40,7 @@ export default function CommuteForm() {
       mutators={{ ...arrayMutators }}
       initialValues={{
         isRoundTrip: false,
-        usage: [],
-        approxDistanceKm: 0,
-        approxDurationMinutes: 0,
+        usage: [{}],
         traffic: "LOW",
       }}
       render={({ handleSubmit, form }) => (
@@ -54,7 +52,7 @@ export default function CommuteForm() {
               {({ input }) => (
                 <FormControl>
                   <FormLabel>User ID</FormLabel>
-                  <Input {...input} type="text" />
+                  <Input required {...input} type="text" />
                 </FormControl>
               )}
             </Field>
@@ -63,7 +61,7 @@ export default function CommuteForm() {
               {({ input }) => (
                 <FormControl>
                   <FormLabel>Commute Name</FormLabel>
-                  <Input {...input} type="text" />
+                  <Input required {...input} type="text" />
                 </FormControl>
               )}
             </Field>
@@ -81,7 +79,7 @@ export default function CommuteForm() {
               {({ input }) => (
                 <FormControl>
                   <FormLabel>Approximate Distance (km)</FormLabel>
-                  <Input {...input} />
+                  <Input required {...input} />
                 </FormControl>
               )}
             </Field>
@@ -89,7 +87,7 @@ export default function CommuteForm() {
               {({ input }) => (
                 <FormControl>
                   <FormLabel>Approximate Duration (minutes)</FormLabel>
-                  <Input {...input} />
+                  <Input required {...input} />
                 </FormControl>
               )}
             </Field>

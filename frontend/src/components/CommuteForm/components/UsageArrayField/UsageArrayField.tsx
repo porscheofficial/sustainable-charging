@@ -20,8 +20,8 @@ export default function UsageArrayField() {
             <HStack key={name} mb={3}>
               <Field name={`${name}.day`} component="select">
                 {({ input }) => (
-                  <Select {...input}>
-                    <option>Select day</option>
+                  <Select required {...input}>
+                    <option value="">Select day</option>
                     <option value="MON">Monday</option>
                     <option value="TUE">Tuesday</option>
                     <option value="WED">Wednesday</option>
@@ -34,11 +34,11 @@ export default function UsageArrayField() {
               </Field>
 
               <Field name={`${name}.startTime`} component="input" type="time">
-                {({ input }) => <Input {...input} />}
+                {({ input }) => <Input required {...input} />}
               </Field>
 
               <Field name={`${name}.endTime`} component="input" type="time">
-                {({ input }) => <Input {...input} />}
+                {({ input }) => <Input required {...input} />}
               </Field>
 
               <Button onClick={() => fields.remove(index)}>

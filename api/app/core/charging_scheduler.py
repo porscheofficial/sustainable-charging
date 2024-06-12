@@ -82,6 +82,7 @@ def get_soc_curve_from_commutes(
             (soc_curve.index > last_trip_end) & (soc_curve.index <= trip_start)
         ].index:
             soc_curve.at[i] = current_soc
+
         last_trip_end = trip_end
         mask = (soc_curve.index > trip_start) & (
             soc_curve.index < trip_end + timedelta(hours=1)
