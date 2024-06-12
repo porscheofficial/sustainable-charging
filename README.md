@@ -37,7 +37,7 @@ It is recommended to run the backend in a virtual environment.
 In the project root, run to create the conda environment and install all required packages.
 
 ```bash
-conda env create -f environment.yml && conda activate chargify
+conda env create -f environment.yml && conda activate aip-porsche
 ```
 
 To start the backend API, move into the api directory (`cd api/app`) and run

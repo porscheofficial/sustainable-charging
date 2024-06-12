@@ -1,5 +1,6 @@
 import pathlib
 import sys
+import pytz
 
 base_path = pathlib.Path(__file__).parents[3]
 sys.path.append(str(base_path))
@@ -68,11 +69,18 @@ async def get_schedule(
     energy_mix = prediction.pd_dataframe()
     energy_mix = energy_mix.reset_index()
 
+    timezone = pytz.timezone("Europe/Berlin")  # hard coded to Germany (for now)
+
     # calculate charging windows
     soc_curve = get_soc_curve_from_commutes(
         commutes,
         datetime(
-            datetime.now().year, datetime.now().month, datetime.now().day, 0, 0, 0
+            datetime.now(timezone).year,
+            datetime.now(timezone).month,
+            datetime.now(timezone).day,
+            0,
+            0,
+            0,
         ),
         initial_soc,
         car,

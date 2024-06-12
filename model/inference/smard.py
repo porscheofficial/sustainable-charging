@@ -1,5 +1,6 @@
 import requests
 import logging
+import pytz
 from datetime import datetime, timedelta
 
 import pandas as pd
@@ -12,7 +13,8 @@ logger = logging.getLogger(__name__)
 
 def get_week_start_dates_until_cutoff(n_lookback):
     """Returns a list of the start dates of weeks from now until the given cutoff date at 00:00:00"""
-    current_date = datetime.now()
+    timezone = pytz.timezone("Europe/Berlin")  # hard coded to Germany (for now)
+    current_date = datetime.now(timezone)
     current_date = current_date.replace(
         hour=0, minute=0, second=0, microsecond=0
     )  # Start from beginning of today
